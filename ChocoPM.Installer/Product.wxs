@@ -7,7 +7,7 @@
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <Media Id="1" Cabinet="ChocoPM.cab" EmbedCab="yes" CompressionLevel="high"/>
 
-		<Feature Id="MainProduct" Title="Choco Package Manager" Level="1">
+		<Feature Id="Complete" Title="Choco Package Manager" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
 		</Feature>
     
@@ -35,9 +35,51 @@
          <File Name="$(var.ChocoPM.TargetFileName)" Source="$(var.ChocoPM.TargetPath)" KeyPath="yes" Checksum="yes"/>
          <File Name="$(var.ChocoPM.TargetFileName).config" Source="$(var.ChocoPM.TargetDir)\$(var.ChocoPM.TargetFileName).config"/>
 			 </Component>
-      <Component Id="ChocoPM.Dll" Guid="EF4EFD71-43D1-4471-8541-EB2A8C1CD3FA">
-        <File Name="System.Management.Automation.dll" Source="$(var.ChocoPM.TargetPath)"/>
+      <Component Id="AutoMapper" Guid="ddcf3d76-fa12-4563-b5ce-ed289e0dae39">
+        <File Name="AutoMapper.dll" Source="$(var.ChocoPM.TargetDir)\AutoMapper.dll"/>
       </Component>
-		</ComponentGroup>
+      <Component Id="AutoMapper.Net4" Guid="89714b28-f84b-471d-b7b5-503ff2610b7e">
+        <File Name="AutoMapper.Net4.dll" Source="$(var.ChocoPM.TargetDir)\AutoMapper.Net4.dll"/>
+      </Component>
+      <Component Id="MahApps.Metro" Guid="c71dd24e-afbb-4666-8539-3204f1f5801d">
+        <File Name="MahApps.Metro.dll" Source="$(var.ChocoPM.TargetDir)\MahApps.Metro.dll"/>
+      </Component>
+      <Component Id="Markdown.Xaml" Guid="d8ca2fcb-3c14-4e5e-a8f9-9785aa1f5caa">
+        <File Name="Markdown.Xaml.dll" Source="$(var.ChocoPM.TargetDir)\Markdown.Xaml.dll"/>
+      </Component>
+      <Component Id="Microsoft.Data.Edm" Guid="219cb31b-6e88-467e-af9c-a127bfd67e33">
+        <File Name="Microsoft.Data.Edm.dll" Source="$(var.ChocoPM.TargetDir)\Microsoft.Data.Edm.dll"/>
+      </Component>
+      <Component Id="Microsoft.Data.OData" Guid="d2713981-6494-4f55-9df0-5f81636d0cbf">
+        <File Name="Microsoft.Data.OData.dll" Source="$(var.ChocoPM.TargetDir)\Microsoft.Data.OData.dll"/>
+      </Component>
+      <Component Id="Microsoft.Data.Services.Client" Guid="9f63185a-efca-4e14-b561-19e1af4da60f">
+        <File Name="Microsoft.Data.Services.Client.dll" Source="$(var.ChocoPM.TargetDir)\Microsoft.Data.Services.Client.dll"/>
+      </Component>
+      <Component Id="Ninject" Guid="563a7231-817e-4d5d-95b7-61332c9a26e1">
+        <File Name="Ninject.dll" Source="$(var.ChocoPM.TargetDir)\Ninject.dll"/>
+      </Component>
+      <Component Id="System.Reactive.Core" Guid="4c556c42-625c-43d7-bcb6-6c3571d9fc68">
+        <File Name="System.Reactive.Core.dll" Source="$(var.ChocoPM.TargetDir)\System.Reactive.Core.dll"/>
+      </Component>
+      <Component Id="System.Reactive.Interfaces" Guid="ee6f46ce-441b-4fea-9a9c-52541d989587">
+        <File Name="System.Reactive.Interfaces.dll" Source="$(var.ChocoPM.TargetDir)\System.Reactive.Interfaces.dll"/>
+      </Component>
+      <Component Id="System.Reactive.Linq" Guid="c0c6c7e4-0f4e-4164-a6f5-37d6556bebb0">
+        <File Name="System.Reactive.Linq.dll" Source="$(var.ChocoPM.TargetDir)\System.Reactive.Linq.dll"/>
+      </Component>
+      <Component Id="System.Reactive.PlatformServices" Guid="00017611-647d-4ccd-82fe-f776ff30d699">
+        <File Name="System.Reactive.PlatformServices.dll" Source="$(var.ChocoPM.TargetDir)\System.Reactive.PlatformServices.dll"/>
+      </Component>
+      <Component Id="System.Reactive.Windows.Threading" Guid="fff46fd7-d4bf-42e2-b2f4-b254d6da42f5">
+        <File Name="System.Reactive.Windows.Threading.dll" Source="$(var.ChocoPM.TargetDir)\System.Reactive.Windows.Threading.dll"/>
+      </Component>
+      <Component Id="System.Spatial" Guid="c32fa004-579f-49d2-a0e8-3aa2b808ed55">
+        <File Name="System.Spatial.dll" Source="$(var.ChocoPM.TargetDir)\System.Spatial.dll"/>
+      </Component>
+      <Component Id="System.Windows.Interactivity" Guid="e4e81f7d-c6cc-4179-8ff7-75192e7189b2">
+        <File Name="System.Windows.Interactivity.dll" Source="$(var.ChocoPM.TargetDir)\System.Windows.Interactivity.dll"/>
+      </Component>
+    </ComponentGroup>
 	</Fragment>
 </Wix>
