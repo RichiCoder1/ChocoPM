@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
+	<Product Id="*" Name="ChocoPM" Language="1033" Version="0.1" Manufacturer="Rash Apps" UpgradeCode="34f1c107-b1aa-447a-95bb-ebcffaa2e9c2">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <Media Id="1" Cabinet="ChocoPM.cab" EmbedCab="yes" CompressionLevel="high"/>
+
+		<Feature Id="MainProduct" Title="Choco Package Manager" Level="1">
+			<ComponentGroupRef Id="ProductComponents" />
+		</Feature>
+    
+    <UI>
+      <UIRef Id="WixUI_Minimal" />
+    </UI>
+
+    <PropertyRef Id="NETFRAMEWORK45"/>
+    <Condition Message="This application requires .NET Framework 4.5. Please install the .NET Framework then run this installer again.">
+      <![CDATA[Installed OR NETFRAMEWORK45]]>
+    </Condition>
+	</Product>
+
+	<Fragment>
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="ChocoPM" />
+			</Directory>
+		</Directory>
+	</Fragment>
+
+	<Fragment>
+		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
+			 <Component Id="ChocoPM.exe" Guid="FEC05756-A55E-4AA5-9B8A-5CB978EA7649">
+         <File Name="$(var.ChocoPM.TargetFileName)" Source="$(var.ChocoPM.TargetPath)" KeyPath="yes" Checksum="yes"/>
+         <File Name="$(var.ChocoPM.TargetFileName).config" Source="$(var.ChocoPM.TargetDir)\$(var.ChocoPM.TargetFileName).config"/>
+			 </Component>
+      <Component Id="ChocoPM.Dll" Guid="EF4EFD71-43D1-4471-8541-EB2A8C1CD3FA">
+        <File Name="System.Management.Automation.dll" Source="$(var.ChocoPM.TargetPath)"/>
+      </Component>
+		</ComponentGroup>
+	</Fragment>
+</Wix>

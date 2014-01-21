@@ -1,0 +1,47 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mrkd="clr-namespace:Markdown.Xaml;assembly=Markdown.Xaml">
+    <Style TargetType="FlowDocument" x:Key="DocumentStyle">
+        <Setter Property="FontFamily"
+                    Value="Calibri" />
+        <Setter Property="TextAlignment"
+                    Value="Left" />
+    </Style>
+
+    <Style x:Key="PageHeader"
+               TargetType="Paragraph">
+        <Setter Property="FontSize"
+                    Value="42" />
+        <Setter Property="Foreground"
+                    Value="#ff000000" />
+        <Setter Property="FontWeight"
+                    Value="Light" />
+    </Style>
+
+    <Style x:Key="SubHeader"
+               TargetType="Paragraph">
+        <Setter Property="FontSize"
+                    Value="20" />
+        <Setter Property="Foreground"
+                    Value="#ff000000" />
+        <Setter Property="FontWeight"
+                    Value="Light" />
+    </Style>
+
+    <Style x:Key="SubHeaderSecondary"
+               TargetType="Paragraph">
+        <Setter Property="FontSize"
+                    Value="20" />
+        <Setter Property="Foreground"
+                    Value="#99000000" />
+        <Setter Property="FontWeight"
+                    Value="Light" />
+    </Style>
+
+    <mrkd:Markdown x:Key="Markdown"
+                        DocumentStyle="{StaticResource DocumentStyle}"
+                        Heading1Style="{StaticResource PageHeader}"
+                        Heading2Style="{StaticResource SubHeader}"
+                        Heading3Style="{StaticResource SubHeaderSecondary}"/>
+</ResourceDictionary>
