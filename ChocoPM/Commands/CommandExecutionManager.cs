@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Input;
-using System.Threading;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reflection;
 using System.Collections.Concurrent;
-using System.Linq.Expressions;
 using Expression = System.Linq.Expressions.Expression;
 
 // Big thanks to Doug Schott @ Code Project | http://www.codeproject.com/Articles/101881/Executing-Command-Logic-in-a-View-Model
@@ -20,13 +15,13 @@ namespace ChocoPM.Commands
     public static class CommandExecutionManager
     {
 
-        private static readonly ConcurrentDictionary<CommandExecutionProviderKey, ICommandExecutionProvider> _ExecutionProviders
+        private static readonly ConcurrentDictionary<CommandExecutionProviderKey, ICommandExecutionProvider> ExecutionProviders
             = new ConcurrentDictionary<CommandExecutionProviderKey, ICommandExecutionProvider>();
 
-        private static readonly ConcurrentDictionary<Tuple<Type, string, string>, Func<object>> _CompiledConstructors
-            = new ConcurrentDictionary<Tuple<Type, string, string>, Func<object>>();
+        private static readonly ConcurrentDictionary<CommandExecutionProviderKey, Func<object>> CompiledConstructors
+            = new ConcurrentDictionary<CommandExecutionProviderKey, Func<object>>();
 
-        private static object _DisconnectedItemSentinelValue = null;
+        private static object _disconnectedItemSentinelValue;
 
         /// <summary>
         ///     Attempts to dynamically execute the method indicated by canExecuteMethodName 
@@ -86,7 +81,6 @@ namespace ChocoPM.Commands
                     var param = Expression.Parameter(objectType, "Target");
                     var label = Expression.Label();
 
-                    /// Grab the taget type and 
                     var targetTypeVarExpr = Expression.Variable(typeof(Type), "targetType");
                     var setTargetTypeVarExpr = Expression.Assign(targetTypeVarExpr, Expression.Call(param, objectType.GetMethod("GetType")));
                     var targetTypeNameExpr = Expression.PropertyOrField(targetTypeVarExpr, "FullName");
@@ -112,16 +106,16 @@ namespace ChocoPM.Commands
 
         private static ICommandExecutionProvider GetCommandExecutionProvider(object target, string canExecuteMethodName, string executedMethodName)
         {
-            if (target == _DisconnectedItemSentinelValue)
+            if (target == _disconnectedItemSentinelValue)
                 return null;
 
             var key = new CommandExecutionProviderKey(target.GetType(), canExecuteMethodName, executedMethodName);
-            ICommandExecutionProvider executionProvider = null;
-            if (!_ExecutionProviders.TryGetValue(key, out executionProvider))
+            ICommandExecutionProvider executionProvider;
+            if (!ExecutionProviders.TryGetValue(key, out executionProvider))
             {
                  try
                 {
-                    executionProvider = (ICommandExecutionProvider)GetCommandExecutionProviderConstructor(key, canExecuteMethodName, executedMethodName)();
+                    executionProvider = (ICommandExecutionProvider)GetCommandExecutionProviderConstructor(key)();
                 }
                 catch (TargetInvocationException)
                 {
@@ -135,10 +129,10 @@ namespace ChocoPM.Commands
                     // Answer 10 on the forum located here:
                     // http://www.go4answers.com/Example/disconnecteditem-causing-it-115624.aspx
 
-                    if (_DisconnectedItemSentinelValue == null)
+                    if (_disconnectedItemSentinelValue == null)
                     {
                         if (IsDisconnected(target))
-                            _DisconnectedItemSentinelValue = target;
+                            _disconnectedItemSentinelValue = target;
 
                         //var targetType = target.GetType();
                         //if (targetType.FullName == "MS.Internal.NamedObject")
@@ -151,30 +145,31 @@ namespace ChocoPM.Commands
                         //        }
                         //}
                     }
-                    if (target != _DisconnectedItemSentinelValue)
+                    if (target != _disconnectedItemSentinelValue)
                         throw;
                 }
 
-                _ExecutionProviders.TryAdd(key, executionProvider);
+                ExecutionProviders.TryAdd(key, executionProvider);
                 
             }
             return executionProvider;
         }
 
-        private static Func<object> GetCommandExecutionProviderConstructor(CommandExecutionProviderKey key, string canExecuteMethodName, string executedMethodName)
+        private static Func<object> GetCommandExecutionProviderConstructor(CommandExecutionProviderKey key)
         {
             Func<object> constructor;
-            if (!_CompiledConstructors.TryGetValue(Tuple.Create(key.TargetType, canExecuteMethodName, executedMethodName), out constructor))
+            if (!CompiledConstructors.TryGetValue(key, out constructor))
             {
                 var executionProviderType = typeof(CommandExecutionProvider<>).MakeGenericType(key.TargetType);
-                var executionProviderCtor = executionProviderType.GetConstructor(new Type[] { typeof(Type), typeof(string), typeof(string) });
+                var executionProviderCtor = executionProviderType.GetConstructor(new [] { typeof(Type), typeof(string), typeof(string) });
 
                 var executionProviderCtorParamaters = new Expression[] {
                     Expression.Constant(key.TargetType),
-                    Expression.Constant(canExecuteMethodName),
-                    Expression.Constant(executedMethodName)
+                    Expression.Constant(key.CanExecuteMethodName),
+                    Expression.Constant(key.ExecutedMethodName)
                 };
 
+                Debug.Assert(executionProviderCtor != null, "executionProviderCtor != null");
                 var executionProviderCtorExpression = Expression.New(executionProviderCtor, executionProviderCtorParamaters);
                 constructor = Expression.Lambda<Func<object>>(executionProviderCtorExpression).Compile();
             }
@@ -197,9 +192,9 @@ namespace ChocoPM.Commands
             public CommandExecutionProviderKey(Type targetType, string canExecuteMethodName, string executedMethodName)
                 : this()
             {
-                this.TargetType = targetType;
-                this.CanExecuteMethodName = canExecuteMethodName;
-                this.ExecutedMethodName = executedMethodName;
+                TargetType = targetType;
+                CanExecuteMethodName = canExecuteMethodName;
+                ExecutedMethodName = executedMethodName;
             }
         }
 
@@ -227,19 +222,10 @@ namespace ChocoPM.Commands
         /// <typeparam name="TTarget">The target Type</typeparam>
         private class CommandExecutionProvider<TTarget> : ICommandExecutionProvider
         {
-            //
-            // Because the method signatures are well-known, unbounded delegates can be used to
-            // execute the command methods. Unbounded delegates have a significant performance
-            // advantage over "standard" reflection method calls.
-            private delegate void ExecutedDelegate(TTarget @target);
-            private delegate void ExecutedWithParamDelegate(TTarget @target, object parameter);
-            private delegate bool CanExecuteDelegate(TTarget @target);
-            private delegate bool CanExecuteWithParamDelegate(TTarget @target, object parameter);
-
-            private Func<TTarget, bool> _canExecute;
-            private Func<TTarget, object, bool> _canExecuteWithParam;
-            private Action<TTarget> _executed;
-            private Action<TTarget, object> _executedWithParam;
+            private readonly Func<TTarget, bool> _canExecute;
+            private readonly Func<TTarget, object, bool> _canExecuteWithParam;
+            private readonly Action<TTarget> _executed;
+            private readonly Action<TTarget, object> _executedWithParam;
 
             public Type TargetType { get; private set; }
 
@@ -251,7 +237,7 @@ namespace ChocoPM.Commands
             {
                 if (this._canExecute != null)
                     return this._canExecute((TTarget)target);
-                else if (this._canExecuteWithParam != null)
+                if (this._canExecuteWithParam != null)
                     return this._canExecuteWithParam((TTarget)target, parameter);
                 return false;
             }
@@ -266,14 +252,14 @@ namespace ChocoPM.Commands
 
             public CommandExecutionProvider(Type targetType, string canExecuteMethodName, string executedMethodName)
             {
-                this.TargetType = targetType;
-                this.CanExecuteMethodName = canExecuteMethodName;
-                this.ExecutedMethodName = executedMethodName;
+                TargetType = targetType;
+                CanExecuteMethodName = canExecuteMethodName;
+                ExecutedMethodName = executedMethodName;
                 
                 var targetParameter = Expression.Parameter(targetType);
                 var paramParamater = Expression.Parameter(typeof(object));
                 
-                var canExecuteMethodInfo = this.GetMethodInfo(this.CanExecuteMethodName);
+                var canExecuteMethodInfo = GetMethodInfo(CanExecuteMethodName);
                 if (canExecuteMethodInfo != null && canExecuteMethodInfo.ReturnType == typeof(bool))
                 {
                     if (canExecuteMethodInfo.GetParameters().Length == 0)
@@ -284,9 +270,9 @@ namespace ChocoPM.Commands
                 if (this._canExecute == null && this._canExecuteWithParam == null)
                     throw new Exception(string.Format(
                         "Method {0} on type {1} does not have a valid method signature. The method must have one of the following signatures: 'public bool CanExecute()' or 'public bool CanExecute(object parameter)'",
-                        this.CanExecuteMethodName, typeof(TTarget)));
+                        CanExecuteMethodName, typeof(TTarget)));
 
-                var executedMethodInfo = this.GetMethodInfo(this.ExecutedMethodName);
+                var executedMethodInfo = GetMethodInfo(ExecutedMethodName);
                 if (executedMethodInfo != null && executedMethodInfo.ReturnType == typeof(void))
                 {
                     if (executedMethodInfo.GetParameters().Length == 0)
@@ -297,12 +283,12 @@ namespace ChocoPM.Commands
                 if (this._executed == null && this._executedWithParam == null)
                     throw new Exception(string.Format(
                         "Method {0} on type {1} does not have a valid method signature. The method must have one of the following signatures: 'public void Executed()' or 'public void Executed(object parameter)'",
-                        this.ExecutedMethodName, typeof(TTarget)));
+                        ExecutedMethodName, typeof(TTarget)));
             }
 
             private MethodInfo GetMethodInfo(string methodName)
             {
-                return typeof(TTarget).GetMethod(methodName, new Type[] { typeof(object) })
+                return typeof(TTarget).GetMethod(methodName, new [] { typeof(object) })
                     ?? typeof(TTarget).GetMethod(methodName, new Type[0]);
             }
         }

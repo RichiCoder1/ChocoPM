@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -14,37 +10,41 @@ namespace ChocoPM.Extensions
         public static string GetSortMemberPath(this DataGridColumn column)
         {
             // find the sortmemberpath
-            string sortPropertyName = column.SortMemberPath;
-            if (string.IsNullOrEmpty(sortPropertyName))
+            string sortPropertyName;
+
+            var boundColumn = column as DataGridBoundColumn;
+            if (boundColumn == null)
             {
-                DataGridBoundColumn boundColumn = column as DataGridBoundColumn;
-                if (boundColumn != null)
-                {
-                    Binding binding = boundColumn.Binding as Binding;
-                    if (binding != null)
-                    {
-                        if (!string.IsNullOrEmpty(binding.XPath))
-                        {
-                            sortPropertyName = binding.XPath;
-                        }
-                        else if (binding.Path != null)
-                        {
-                            sortPropertyName = binding.Path.Path;
-                        }
-                    }
-                }
+                return null;
             }
+
+            var binding = boundColumn.Binding as Binding;
+            if (binding == null)
+            {
+                return null;
+            }
+
+            if (!string.IsNullOrEmpty(binding.XPath))
+            {
+                sortPropertyName = binding.XPath;
+            }
+            else if (binding.Path != null)
+            {
+                sortPropertyName = binding.Path.Path;
+            }
+            else
+                sortPropertyName = null;
 
             return sortPropertyName;
         }
 
         public static int FindSortDescription(this SortDescriptionCollection sortDescriptions, string sortPropertyName)
         {
-            int index = -1;
-            int i = 0;
-            foreach (SortDescription sortDesc in sortDescriptions)
+            var index = -1;
+            var i = 0;
+            foreach (var sortDesc in sortDescriptions)
             {
-                if (string.Compare(sortDesc.PropertyName, sortPropertyName) == 0)
+                if (String.CompareOrdinal(sortDesc.PropertyName, sortPropertyName) == 0)
                 {
                     index = i;
                     break;

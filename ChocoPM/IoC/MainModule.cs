@@ -1,6 +1,4 @@
-﻿using Ninject;
-using ChocoPM.Views;
-using ChocoPM.ViewModels;
+﻿using ChocoPM.ViewModels;
 using ChocoPM.Services;
 
 namespace ChocoPM.IoC

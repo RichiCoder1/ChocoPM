@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChocoPM.ViewModels
 {
@@ -15,13 +10,15 @@ namespace ChocoPM.ViewModels
 
         public void SetPropertyValue<T>(ref T property, T value, [CallerMemberName] string propertyName = "")
         {
-            if (!EqualityComparer<T>.Default.Equals(property, value))
+            if (EqualityComparer<T>.Default.Equals(property, value))
             {
-                property = value;
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-                }
+                return;
+            }
+
+            property = value;
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
     }

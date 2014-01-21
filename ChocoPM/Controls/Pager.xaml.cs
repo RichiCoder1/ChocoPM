@@ -1,24 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
 
 namespace ChocoPM.Controls
 {
     /// <summary>
     /// Interaction logic for Pager.xaml
     /// </summary>
-    public partial class Pager : UserControl
+    public partial class Pager
     {
 
         public static readonly DependencyProperty CurrentIndexProperty = RegisterProperty<int>("CurrentIndex");
@@ -50,7 +37,7 @@ namespace ChocoPM.Controls
 
         public T GetValue<T>(DependencyProperty prop)
         {
-            return (T)this.GetValue(prop);
+            return (T)GetValue(prop);
         }
         #endregion
     }

@@ -1,27 +1,24 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChocoPM.Extensions
 {
     public static class LinqExtensions
     {
-        private static readonly ConcurrentDictionary<Type, ConcurrentDictionary<string, PropertyInfo>> _cachedTypes =
+        private static readonly ConcurrentDictionary<Type, ConcurrentDictionary<string, PropertyInfo>> CachedTypes =
             new ConcurrentDictionary<Type, ConcurrentDictionary<string, PropertyInfo>>();
 
         private static PropertyInfo GetProperty<T>(string propertyName)
         {
             var type = typeof(T);
             ConcurrentDictionary<string, PropertyInfo> propDic;
-            if (!_cachedTypes.TryGetValue(type, out propDic))
+            if (!CachedTypes.TryGetValue(type, out propDic))
             {
                 propDic = new ConcurrentDictionary<string, PropertyInfo>();
-                _cachedTypes.TryAdd(type, propDic);
+                CachedTypes.TryAdd(type, propDic);
             }
 
             PropertyInfo targetProp;
@@ -44,13 +41,14 @@ namespace ChocoPM.Extensions
             if (targetProp == null)
                 throw new ArgumentException("There is no property with that name");
 
-            ParameterExpression[] parameters = new ParameterExpression[] {
-                Expression.Parameter(query.ElementType, "query") };
+            var parameters = new [] {
+                Expression.Parameter(query.ElementType, "query") 
+            };
 
             var queryExpr = query.Expression;
             queryExpr = Expression.Call(
                 typeof(Queryable),
-                "OrderBy", new Type[] { query.ElementType, targetProp.PropertyType },
+                "OrderBy", new [] { query.ElementType, targetProp.PropertyType },
                 queryExpr,
                 Expression.Lambda(Expression.Property(parameters[0], targetProp), parameters[0]));
 
@@ -66,11 +64,12 @@ namespace ChocoPM.Extensions
             if (targetProp == null)
                 throw new ArgumentException("There is no property with that name");
 
-            ParameterExpression[] parameters = new ParameterExpression[] {
-                Expression.Parameter(query.ElementType, "query") };
+            var parameters = new [] {
+                Expression.Parameter(query.ElementType, "query") 
+            };
 
             var queryExpr = query.Expression;
-            queryExpr = Expression.Call(typeof(Queryable), "OrderByDescending", new Type[] { query.ElementType, targetProp.PropertyType }, query.Expression, Expression.Lambda(Expression.Property(parameters[0], targetProp), parameters[0]));
+            queryExpr = Expression.Call(typeof(Queryable), "OrderByDescending", new[] { query.ElementType, targetProp.PropertyType }, queryExpr, Expression.Lambda(Expression.Property(parameters[0], targetProp), parameters[0]));
             return query.Provider.CreateQuery<T>(queryExpr);
         }
 
@@ -83,11 +82,12 @@ namespace ChocoPM.Extensions
             if (targetProp == null)
                 throw new ArgumentException("There is no property with that name");
 
-            ParameterExpression[] parameters = new ParameterExpression[] {
-                Expression.Parameter(query.ElementType, "query") };
+            var parameters = new [] {
+                Expression.Parameter(query.ElementType, "query")
+            };
 
             var queryExpr = query.Expression;
-            queryExpr = Expression.Call(typeof(Queryable), "ThenBy", new Type[] { query.ElementType, targetProp.PropertyType }, queryExpr, Expression.Lambda(Expression.Property(parameters[0], targetProp), parameters[0]));
+            queryExpr = Expression.Call(typeof(Queryable), "ThenBy", new [] { query.ElementType, targetProp.PropertyType }, queryExpr, Expression.Lambda(Expression.Property(parameters[0], targetProp), parameters[0]));
             return query.Provider.CreateQuery<T>(queryExpr);
         }
 
@@ -100,23 +100,23 @@ namespace ChocoPM.Extensions
             if (targetProp == null)
                 throw new ArgumentException("There is no property with that name");
 
-            ParameterExpression[] parameters = new ParameterExpression[] {
-                Expression.Parameter(query.ElementType, "query") };
+            var parameters = new [] {
+                Expression.Parameter(query.ElementType, "query")
+            };
 
             var queryExpr = query.Expression;
-            queryExpr = Expression.Call(typeof(Queryable), "ThenByDescending", new Type[] { query.ElementType, targetProp.PropertyType }, queryExpr, Expression.Lambda(Expression.Property(parameters[0], targetProp), parameters[0]));
+            queryExpr = Expression.Call(typeof(Queryable), "ThenByDescending", new [] { query.ElementType, targetProp.PropertyType }, queryExpr, Expression.Lambda(Expression.Property(parameters[0], targetProp), parameters[0]));
             return query.Provider.CreateQuery<T>(queryExpr);
         }
 
-        internal class OrderByVistor : ExpressionVisitor
+        internal sealed class OrderByVistor : ExpressionVisitor
         {
-            private Expression expr;
             public bool HasOrderBy { get; set; }
 
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
             public OrderByVistor(Expression queryExpr)
             {
-                this.expr = queryExpr;
-                this.Visit(queryExpr);
+                Visit(queryExpr);
             }
 
             protected override Expression VisitMethodCall(MethodCallExpression node)
@@ -124,12 +124,8 @@ namespace ChocoPM.Extensions
                 if (node.Method.Name == "OrderByDescending" || node.Method.Name == "OrderBy")
                     HasOrderBy = true;
 
-                if (node.CanReduce)
-                    return base.VisitMethodCall(node);
-                else 
-                    return node;
+                return node.CanReduce ? base.VisitMethodCall(node) : node;
             }
-
         }
 
     }

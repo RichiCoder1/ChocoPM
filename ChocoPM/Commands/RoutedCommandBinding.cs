@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace ChocoPM.Commands
@@ -26,13 +25,13 @@ namespace ChocoPM.Commands
         /// <summary>
         ///     Initializes a new instance of the <see cref="RoutedCommandBinding"/> class.
         /// </summary>
-        public RoutedCommandBinding() { }
+        protected RoutedCommandBinding() { }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="RoutedCommandBinding"/> class by
         ///     using the specified <see cref="ICommand"/>.
         /// </summary>
-        public RoutedCommandBinding(ICommand command)
+        protected RoutedCommandBinding(ICommand command)
             : base(command)
         { }
 

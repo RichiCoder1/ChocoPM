@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
@@ -41,7 +36,7 @@ namespace Markdown.Xaml
 
             var text = (string)value;
 
-            var engine = Markdown ?? mMarkdown.Value;
+            var engine = Markdown ?? this._mMarkdown.Value;
 
             return engine.Transform(text);
         }
@@ -61,7 +56,7 @@ namespace Markdown.Xaml
             throw new NotImplementedException();
         }
 
-        private Lazy<Markdown> mMarkdown
+        private readonly Lazy<Markdown> _mMarkdown
             = new Lazy<Markdown>(() => new Markdown());
     }
 }

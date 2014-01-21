@@ -2,26 +2,21 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:choco="clr-namespace:ChocoPM" 
-      xmlns:views="clr-namespace:ChocoPM.Views"  
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vm="clr-namespace:ChocoPM.ViewModels"  
-      xmlns:cmd="clr-namespace:ChocoPM.Commands"
       xmlns:cvrts="clr-namespace:ChocoPM.Converters"
       xmlns:mrkd="clr-namespace:Markdown.Xaml;assembly=Markdown.Xaml"
       mc:Ignorable="d" 
       d:DesignHeight="768" d:DesignWidth="1366"
-      d:DataContext="{d:DesignInstance vm:HomeViewModel}"
-	Title="Home">
-    <Page.CommandBindings>
-    </Page.CommandBindings>
+      d:DataContext="{d:DesignInstance vm:HomeViewModel}" Title="Home">
+    
     <Page.Resources>
-        <choco:UriToVisibility x:Key="UriToVisibilty"/>
-        <choco:NullToVisibility x:Key="NullToVisibility"/>
+        <cvrts:UriToVisibility x:Key="UriToVisibilty"/>
+        <cvrts:NullToVisibility x:Key="NullToVisibility"/>
         <cvrts:LongSizeToFileSizeString x:Key="LongSizeToFileSizeString"/>
         <mrkd:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter" Markdown="{StaticResource Markdown}"/>
     </Page.Resources>
-    <Grid x:Name="PackagesGrid" DockPanel.Dock="Left">
+    <Grid x:Name="PackagesGrid">
         <TabControl>
             <TabItem Header="Available Packages">
                 <Grid VerticalAlignment="Stretch">
@@ -37,13 +32,13 @@
                         <Label>Search: </Label>
                         <TextBox x:Name="SearchBox" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Search Box" Margin="5,5,25,5"></TextBox>
                     </StackPanel>
-                    
-                    <DataGrid Grid.Row="1" Margin="5,0,0,0" x:Name="AvailablePackagesList" 
+
+                    <DataGrid x:Name="AvailablePackagesList"
+                              Grid.Row="1" Grid.Column="0" Margin="5,0,0,0" 
                               ItemsSource="{Binding Packages}" 
                               SelectedItem="{Binding SelectedPackage}"
-                              AutoGenerateColumns="False"
-                              Sorting="AvailablePackagesList_Sorting"
-                              IsReadOnly="True">
+                              AutoGenerateColumns="False" IsReadOnly="True"
+                              Sorting="AvailablePackagesList_Sorting">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="2*"/>
                             <DataGridTextColumn Header="Version" Binding="{Binding Version}" Width="1*"/>
@@ -52,8 +47,8 @@
                     </DataGrid>
 
                     <Grid x:Name="PackageViewGrid" DataContext="{Binding SelectedPackage}"
-                          Grid.Column="1" Grid.RowSpan="2" Margin="20,0,0,0"
-                          Visibility="{Binding DataContext.SelectedPackage, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, FallbackValue=Collapsed, Converter={StaticResource NullToVisibility}}">
+                          Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="20,0,0,0"
+                          Visibility="{Binding DataContext, RelativeSource={RelativeSource Self}, FallbackValue=Collapsed, Converter={StaticResource NullToVisibility}}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
@@ -67,7 +62,7 @@
                             <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextStyle}"/>
                             <TextBlock Style="{StaticResource SubtitleTextStyle}">By: <Run Text="{Binding Authors}"></Run></TextBlock>
                         </StackPanel>
-                        <StackPanel Grid.Row="1">
+                        <StackPanel Grid.Row="1" Grid.Column="0">
                             <Label Style="{StaticResource PackageResourceLabel}">Version Downloads:</Label>
                             <TextBlock Text="{Binding VersionDownloadCount}" Style="{StaticResource PackageResourceValue}"></TextBlock>
                             <Label Style="{StaticResource PackageResourceLabel}">Total Downloads:</Label>
@@ -79,7 +74,7 @@
 
                             <StackPanel Margin="5,5,0,0">
                                 <TextBlock Visibility="{Binding ProjectUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}"><Hyperlink NavigateUri="{Binding ProjectUrl}" RequestNavigate="HandleLinkClick">Project Site</Hyperlink></TextBlock>
-                                <TextBlock Visibility="{Binding LicenceUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}"><Hyperlink NavigateUri="{Binding LicenceUrl}" RequestNavigate="HandleLinkClick">Licence</Hyperlink></TextBlock>
+                                <TextBlock Visibility="{Binding LicenseUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}"><Hyperlink NavigateUri="{Binding LicenseUrl}" RequestNavigate="HandleLinkClick">Licence</Hyperlink></TextBlock>
                                 <TextBlock Visibility="{Binding GalleryDetailsUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}"><Hyperlink NavigateUri="{Binding GalleryDetailsUrl}" RequestNavigate="HandleLinkClick">Gallery</Hyperlink></TextBlock>
                                 <TextBlock Visibility="{Binding ReportAbuseUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}"><Hyperlink NavigateUri="{Binding ReportAbuseUrl}" RequestNavigate="HandleLinkClick">Report Abuse</Hyperlink></TextBlock>
                             </StackPanel>
@@ -101,14 +96,14 @@
                                   Document="{Binding Description, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
                             <TextBlock Grid.Row="2" Text="Release Notes:" Style="{StaticResource SectionHeaderTextStyle}"/>
                             <FlowDocumentScrollViewer 
-                                    Grid.Row="3"
+                                  Grid.Row="3"
                                   VerticalAlignment="Stretch"
                                   HorizontalAlignment="Stretch"
                                   Margin="5"
                                   Document="{Binding ReleaseNotes, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
                         </Grid>
 
-                        <Image Grid.Column="3" Source="{Binding IconUrl}" Width="100" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <Image Grid.Row="0" Grid.Column="2" Source="{Binding IconUrl}" Width="100" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Grid>
                 </Grid>
             </TabItem>

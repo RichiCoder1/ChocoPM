@@ -1,9 +1,5 @@
 ﻿using AutoMapper;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChocoPM.ViewModels
 {
@@ -19,13 +15,6 @@ namespace ChocoPM.ViewModels
         {
             get { return _loaded; }
             set { SetPropertyValue(ref _loaded, value); }
-        }
-
-        public PackageViewModel(string title, string version)
-        {
-            Title = title;
-            Version = _version;
-            Loaded = false;
         }
 
         public PackageViewModel(Services.V2FeedPackage feedPackage)

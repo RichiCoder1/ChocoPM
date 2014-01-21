@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 
 namespace ChocoPM.Commands
@@ -86,11 +85,14 @@ namespace ChocoPM.Commands
         {
             var target = GetDataContext(sender);
             bool canExecute;
-            if (CommandExecutionManager.TryExecuteCommand(target, e.Parameter, false, this.PreviewExecuted, this.PreviewCanExecute, out canExecute))
+            if (!CommandExecutionManager.TryExecuteCommand(target, e.Parameter, false,
+                    PreviewExecuted, PreviewCanExecute, out canExecute))
             {
-                e.CanExecute = canExecute;
-                e.Handled = true;
+                return;
             }
+
+            e.CanExecute = canExecute;
+            e.Handled = true;
         }
         
         /// <summary>
@@ -104,11 +106,14 @@ namespace ChocoPM.Commands
         {
             var target = GetDataContext(sender);
             bool canExecute;
-            if (CommandExecutionManager.TryExecuteCommand(target, e.Parameter, false, this.Executed, this.CanExecute, out canExecute))
+            if (!CommandExecutionManager.TryExecuteCommand(target, e.Parameter, false, Executed,
+                    CanExecute, out canExecute))
             {
-                e.CanExecute = canExecute;
-                e.Handled = true;
+                return;
             }
+
+            e.CanExecute = canExecute;
+            e.Handled = true;
         }
 
         /// <summary>
@@ -122,7 +127,7 @@ namespace ChocoPM.Commands
         {
             var target = GetDataContext(sender);
             bool canExecute;
-            if (CommandExecutionManager.TryExecuteCommand(target, e.Parameter, true, this.PreviewExecuted, this.PreviewCanExecute, out canExecute))
+            if (CommandExecutionManager.TryExecuteCommand(target, e.Parameter, true, PreviewExecuted, PreviewCanExecute, out canExecute))
                 e.Handled = true;
         }
 
@@ -137,7 +142,7 @@ namespace ChocoPM.Commands
         {
             var target = GetDataContext(sender);
             bool canExecute;
-            if (CommandExecutionManager.TryExecuteCommand(target, e.Parameter, true, this.Executed, this.CanExecute, out canExecute))
+            if (CommandExecutionManager.TryExecuteCommand(target, e.Parameter, true, Executed, CanExecute, out canExecute))
                 e.Handled = true;
         }
         
@@ -146,11 +151,9 @@ namespace ChocoPM.Commands
             var fe = element as FrameworkElement;
             if (fe != null)
                 return fe.DataContext;
-            else
-            {
-                var fce = element as FrameworkContentElement;
-                return fce == null ? null : fce.DataContext;
-            }
+
+            var fce = element as FrameworkContentElement;
+            return fce == null ? null : fce.DataContext;
         }
     }
 }

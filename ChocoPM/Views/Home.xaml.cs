@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.ComponentModel;
 using System.Reactive.Linq;
 using System.Collections.Specialized;
@@ -14,20 +13,20 @@ namespace ChocoPM.Views
     /// <summary>
     /// Interaction logic for Home.xaml
     /// </summary>
-    public partial class Home : Page
+    public partial class Home
     {
-        private IHomeViewModel _vm;
+        private readonly IHomeViewModel _vm;
         public Home(IHomeViewModel vm)
         {
             InitializeComponent();
-            this.DataContext = vm;
+            DataContext = vm;
             _vm = vm;
 
             Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(_vm.Packages, "CollectionChanged")
                 .Throttle(TimeSpan.FromMilliseconds(50))
                 .Distinct()
                 .ObserveOnDispatcher()
-                .Subscribe(ev => this.Packages_CollectionChanged());
+                .Subscribe(ev => Packages_CollectionChanged());
         }
 
         void Packages_CollectionChanged()
@@ -50,15 +49,14 @@ namespace ChocoPM.Views
 
         private void HandleLinkClick(object sender, RoutedEventArgs e)
         {
-            Hyperlink hl = (Hyperlink)sender;
-            string navigateUri = hl.NavigateUri.ToString();
+            var hl = (Hyperlink)sender;
+            var navigateUri = hl.NavigateUri.ToString();
             Process.Start(new ProcessStartInfo(navigateUri));
             e.Handled = true;
         }
 
         private void AvailablePackagesList_Sorting(object sender, DataGridSortingEventArgs e)
         {
-            DataGrid dataGrid = sender as DataGrid;
             string sortPropertyName = e.Column.GetSortMemberPath();
             if (!string.IsNullOrEmpty(sortPropertyName))
             {

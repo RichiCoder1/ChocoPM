@@ -1,10 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using System.Threading;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Linq.Expressions;
 using Expression = System.Linq.Expressions.Expression;
 
 namespace ChocoPM.Commands
@@ -75,6 +72,7 @@ namespace ChocoPM.Commands
             TryExecuteRoutedCommandBinding(e.Command, sender, e);
         }
 
+        // ReSharper disable once UnusedMethodReturnValue.Local
         private static bool TryExecuteRoutedCommandBinding(ICommand command, object sender, RoutedEventArgs e)
         {
             //
@@ -85,9 +83,9 @@ namespace ChocoPM.Commands
                 commandBindings = UIElementCommandBindingsProvider.GetCommandBindings(uie);
             else
             {
-                var uie3d = sender as UIElement3D;
-                if (uie3d != null)
-                    commandBindings = UIElement3DCommandBindingsProvider.GetCommandBindings(uie3d);
+                var uie3D = sender as UIElement3D;
+                if (uie3D != null)
+                    commandBindings = UIElement3DCommandBindingsProvider.GetCommandBindings(uie3D);
                 else
                 {
                     var ce = sender as ContentElement;
@@ -96,29 +94,26 @@ namespace ChocoPM.Commands
                 }
             }
 
-            if (commandBindings != null)
+            if (commandBindings == null)
             {
-                foreach (var obj in commandBindings)
-                {
-                    var binding = obj as RoutedCommandBinding;
-                    if (binding != null)
-                    {
-                        if (binding.Command == command && (!e.Handled || binding.ViewHandledEvents))
-                        {
-                            if (e.RoutedEvent == CommandManager.PreviewCanExecuteEvent)
-                                binding.OnPreviewCanExecute(sender, (CanExecuteRoutedEventArgs)e);
-                            else if (e.RoutedEvent == CommandManager.CanExecuteEvent)
-                                binding.OnCanExecute(sender, (CanExecuteRoutedEventArgs)e);
-                            else if (e.RoutedEvent == CommandManager.PreviewExecutedEvent)
-                                binding.OnPreviewExecuted(sender, (ExecutedRoutedEventArgs)e);
-                            else if (e.RoutedEvent == CommandManager.ExecutedEvent)
-                                binding.OnExecuted(sender, (ExecutedRoutedEventArgs)e);
+                return false;
+            }
 
-                            if (e.Handled)
-                                return true;
-                        }
-                    }
-                }
+            foreach (var binding in commandBindings
+                                        .OfType<RoutedCommandBinding>()
+                                        .Where(binding => binding.Command == command && (!e.Handled || binding.ViewHandledEvents)))
+            {
+                if (e.RoutedEvent == CommandManager.PreviewCanExecuteEvent)
+                    binding.OnPreviewCanExecute(sender, (CanExecuteRoutedEventArgs)e);
+                else if (e.RoutedEvent == CommandManager.CanExecuteEvent)
+                    binding.OnCanExecute(sender, (CanExecuteRoutedEventArgs)e);
+                else if (e.RoutedEvent == CommandManager.PreviewExecutedEvent)
+                    binding.OnPreviewExecuted(sender, (ExecutedRoutedEventArgs)e);
+                else if (e.RoutedEvent == CommandManager.ExecutedEvent)
+                    binding.OnExecuted(sender, (ExecutedRoutedEventArgs)e);
+
+                if (e.Handled)
+                    return true;
             }
             return false;
         }
@@ -129,11 +124,6 @@ namespace ChocoPM.Commands
         /// <typeparam name="TElementType"></typeparam>
         private class CommandBindingsProvider<TElementType>
         {
-            //
-            // A delegate that matches the signature of the getter method of the
-            // CommandBindingsInternal property.
-            private delegate CommandBindingCollection CommandBindingsInternalGetter(TElementType @target);
-
             //
             // _GetCommandBindings is an Func that is used to access the
             // CommandBindingsInternal property of UIElements, UIElement3D sand ContentElements.
@@ -146,7 +136,6 @@ namespace ChocoPM.Commands
             ///     Returns the collection of CommandBindings or null the collection is not
             ///     instanciated.
             /// </summary>
-            /// <param name="element">The target object</param>
             /// <returns>The collection of CommandBindings</returns>
             internal Func<TElementType, CommandBindingCollection> GetCommandBindings
             {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Input;
@@ -12,13 +11,13 @@ namespace ChocoPM.Commands
     ///     methods of the DataContext of a target FrameworkElement.
     /// </summary>
     /// <remarks>
-    ///     When the <see cref="ICommand.Executed"/> and <see cref="ICommand.CanExecute"/> methods
+    ///     When the <see cref="ICommand.Execute"/> and <see cref="ICommand.CanExecute"/> methods
     ///     of the returned <see cref="ICommand"/> object are invoked, methods on the DataContext
     ///     whose names correspond to the values of the <see cref="Executed"/> and
     ///     <see cref="CanExecute"/> properties are invoked. See the <see cref="Executed"/> and
     ///     <see cref="CanExecute"/> properties for specifics on the allowable method signatures.
     /// </remarks>
-    public class DataContextCommandAdapter : MarkupExtension, ICommand
+    public sealed class DataContextCommandAdapter : MarkupExtension, ICommand
     {
         private object _target; 
 
@@ -61,7 +60,7 @@ namespace ChocoPM.Commands
         /// </param>
         public DataContextCommandAdapter(string executed)
         {
-            this.Executed = executed;
+            Executed = executed;
         }
 
         /// <summary>
@@ -77,8 +76,8 @@ namespace ChocoPM.Commands
         /// </param>
         public DataContextCommandAdapter(string executed, string canExecute)
         {
-            this.Executed = executed;
-            this.CanExecute = canExecute;
+            Executed = executed;
+            CanExecute = canExecute;
         }
 
         /// <summary>
@@ -100,7 +99,7 @@ namespace ChocoPM.Commands
             
             this._target = 
                 target.TargetObject is InputBinding
-                ? this.GetInputBindingsCollectionOwner(target)
+                ? GetInputBindingsCollectionOwner(target)
                 : target.TargetObject;
 
             return this;
@@ -111,25 +110,30 @@ namespace ChocoPM.Commands
         // If there was another way to do this without reflection... I would do it that way
         // Regardless, this method will only be called once when the xaml is initially parsed, so its
         // not really a performance issue.
-        private object GetInputBindingsCollectionOwner(IProvideValueTarget targetService)
+        private static object GetInputBindingsCollectionOwner(IProvideValueTarget targetService)
         {
             var xamlContextField = targetService.GetType().GetField("_xamlContext", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (xamlContextField != null)
+            if (xamlContextField == null)
             {
-                var xamlContext = xamlContextField.GetValue(targetService);
-                var grandParentInstanceProperty = xamlContext.GetType().GetProperty("GrandParentInstance");
-                if (grandParentInstanceProperty != null)
-                {
-                    var inputBindingsCollection = grandParentInstanceProperty.GetGetMethod().Invoke(xamlContext, null);
-                    var ownerField = inputBindingsCollection.GetType().GetField("_owner", BindingFlags.Instance | BindingFlags.NonPublic);
-                    if (ownerField != null)
-                    {
-                        var owner = ownerField.GetValue(inputBindingsCollection);
-                        return owner;
-                    }
-                }
+                return null;
             }
-            return null;
+
+            var xamlContext = xamlContextField.GetValue(targetService);
+            var grandParentInstanceProperty = xamlContext.GetType().GetProperty("GrandParentInstance");
+            if (grandParentInstanceProperty == null)
+            {
+                return null;
+            }
+
+            var inputBindingsCollection = grandParentInstanceProperty.GetGetMethod().Invoke(xamlContext, null);
+            var ownerField = inputBindingsCollection.GetType().GetField("_owner", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (ownerField == null)
+            {
+                return null;
+            }
+
+            var owner = ownerField.GetValue(inputBindingsCollection);
+            return owner;
         }
 
         #region ICommand Implementation
@@ -143,23 +147,24 @@ namespace ChocoPM.Commands
         bool ICommand.CanExecute(object parameter)
         {
             var target = GetDataContext(this._target);
-            if (this._target != null)
+            if (this._target == null)
             {
-                bool canExecute;
-                if (CommandExecutionManager.TryExecuteCommand(target, parameter, false, this.Executed, this.CanExecute, out canExecute))
-                    return canExecute;
+                return false;
             }
-            return false;
+
+            bool canExecute;
+            return CommandExecutionManager.TryExecuteCommand(target, parameter, false, Executed, CanExecute, out canExecute) && canExecute;
         }
 
         void ICommand.Execute(object parameter)
         {
             var target = GetDataContext(this._target);
-            if (this._target != null)
+            if (this._target == null)
             {
-                bool canExecute;
-                CommandExecutionManager.TryExecuteCommand(target, parameter, true, this.Executed, this.CanExecute, out canExecute);
+                return;
             }
+            bool canExecute;
+            CommandExecutionManager.TryExecuteCommand(target, parameter, true, Executed, CanExecute, out canExecute);
         }
 
         private static object GetDataContext(object element)
@@ -167,11 +172,9 @@ namespace ChocoPM.Commands
             var fe = element as FrameworkElement;
             if (fe != null)
                 return fe.DataContext;
-            else
-            {
-                var fce = element as FrameworkContentElement;
-                return fce == null ? null : fce.DataContext;
-            }
+
+            var fce = element as FrameworkContentElement;
+            return fce == null ? null : fce.DataContext;
         }
 
         #endregion
