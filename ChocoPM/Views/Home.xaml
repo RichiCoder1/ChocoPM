@@ -5,7 +5,9 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vm="clr-namespace:ChocoPM.ViewModels"  
       xmlns:cvrts="clr-namespace:ChocoPM.Converters"
+      xmlns:cmds="clr-namespace:ChocoPM.Commands"
       xmlns:mrkd="clr-namespace:Markdown.Xaml;assembly=Markdown.Xaml"
+      xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro" 
       mc:Ignorable="d" 
       d:DesignHeight="768" d:DesignWidth="1366"
       d:DataContext="{d:DesignInstance vm:HomeViewModel}" Title="Home">
@@ -13,6 +15,7 @@
     <Page.Resources>
         <cvrts:UriToVisibility x:Key="UriToVisibilty"/>
         <cvrts:NullToVisibility x:Key="NullToVisibility"/>
+        <cvrts:BooleanToVisibility x:Key="BooleanToVisibility"/>
         <cvrts:LongSizeToFileSizeString x:Key="LongSizeToFileSizeString"/>
         <mrkd:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter" Markdown="{StaticResource Markdown}"/>
     </Page.Resources>
@@ -23,6 +26,8 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
@@ -32,7 +37,8 @@
                         <Label>Search: </Label>
                         <TextBox x:Name="SearchBox" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Search Box" Margin="5,5,25,5"></TextBox>
                     </StackPanel>
-
+          
+                    <!-- Packages List -->
                     <DataGrid x:Name="AvailablePackagesList"
                               Grid.Row="1" Grid.Column="0" Margin="5,0,0,0" 
                               ItemsSource="{Binding Packages}" 
@@ -45,6 +51,32 @@
                             <DataGridTextColumn Header="Total Downloads" Binding="{Binding DownloadCount}" Width="1*"/>
                         </DataGrid.Columns>
                     </DataGrid>
+                    
+                    <Separator Grid.Row="2"></Separator>
+                    
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.Resources>
+                            <Style BasedOn="{StaticResource PageTextBlockStyle}" TargetType="{x:Type TextBlock}"/>
+                        </Grid.Resources>
+                        <TextBlock Grid.Column="1">Page</TextBlock>
+                        <controls:NumericUpDown Grid.Column="2" Value="{Binding CurrentPage}" Maximum="{Binding PageCount}" Minimum="0"></controls:NumericUpDown>
+                        <TextBlock Grid.Column="3">Of <Run Text="{Binding PageCount}" Foreground="LightGray"></Run></TextBlock>
+                    </Grid>
+
+                    <!-- Loading Overlay -->
+                    <Grid Grid.RowSpan="3" Visibility="{Binding Loading, Converter={StaticResource BooleanToVisibility}}">
+                        <Border HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Background="#FF252525"
+                            Opacity=".7" />
+                        <controls:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" IsActive="{Binding Loading}"></controls:ProgressRing>
+                    </Grid>
 
                     <Grid x:Name="PackageViewGrid" DataContext="{Binding SelectedPackage}"
                           Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="20,0,0,0"

@@ -165,8 +165,8 @@ namespace ChocoPM.Commands
 
                 var executionProviderCtorParamaters = new Expression[] {
                     Expression.Constant(key.TargetType),
-                    Expression.Constant(key.CanExecuteMethodName),
-                    Expression.Constant(key.ExecutedMethodName)
+                    Expression.Constant(key.CanExecuteMethodName, typeof(string)),
+                    Expression.Constant(key.ExecutedMethodName, typeof(string))
                 };
 
                 Debug.Assert(executionProviderCtor != null, "executionProviderCtor != null");
@@ -268,9 +268,12 @@ namespace ChocoPM.Commands
                         this._canExecuteWithParam = Expression.Lambda<Func<TTarget, object, bool>>(Expression.Call(targetParameter, canExecuteMethodInfo, paramParamater), targetParameter, paramParamater).Compile();
                 }
                 if (this._canExecute == null && this._canExecuteWithParam == null)
-                    throw new Exception(string.Format(
-                        "Method {0} on type {1} does not have a valid method signature. The method must have one of the following signatures: 'public bool CanExecute()' or 'public bool CanExecute(object parameter)'",
-                        CanExecuteMethodName, typeof(TTarget)));
+                {
+                    this._canExecute = Expression.Lambda<Func<TTarget, bool>>(Expression.Constant(true), targetParameter).Compile();
+                    //throw new Exception(string.Format(
+                    //    "Method {0} on type {1} does not have a valid method signature. The method must have one of the following signatures: 'public bool CanExecute()' or 'public bool CanExecute(object parameter)'",
+                    //    CanExecuteMethodName, typeof(TTarget)));
+                }
 
                 var executedMethodInfo = GetMethodInfo(ExecutedMethodName);
                 if (executedMethodInfo != null && executedMethodInfo.ReturnType == typeof(void))
@@ -288,6 +291,9 @@ namespace ChocoPM.Commands
 
             private MethodInfo GetMethodInfo(string methodName)
             {
+                if (string.IsNullOrWhiteSpace(methodName))
+                    return null;
+
                 return typeof(TTarget).GetMethod(methodName, new [] { typeof(object) })
                     ?? typeof(TTarget).GetMethod(methodName, new Type[0]);
             }
