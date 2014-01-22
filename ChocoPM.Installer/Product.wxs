@@ -7,6 +7,8 @@
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <Media Id="1" Cabinet="ChocoPM.cab" EmbedCab="yes" CompressionLevel="high"/>
 
+    <Icon Id="ProgramIcon.exe" SourceFile="..\Resources\Logo\Icon.ico"/>
+
 		<Feature Id="Complete" Title="Choco Package Manager" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
 		</Feature>
@@ -26,15 +28,18 @@
 			<Directory Id="ProgramFilesFolder">
 				<Directory Id="INSTALLFOLDER" Name="ChocoPM" />
 			</Directory>
-		</Directory>
+      <Directory Id="ProgramMenuFolder"></Directory>
+    </Directory>
 	</Fragment>
 
 	<Fragment>
 		<ComponentGroup Id="ProductComponents" Directory="INSTALLFOLDER">
-			 <Component Id="ChocoPM.exe" Guid="FEC05756-A55E-4AA5-9B8A-5CB978EA7649">
-         <File Name="$(var.ChocoPM.TargetFileName)" Source="$(var.ChocoPM.TargetPath)" KeyPath="yes" Checksum="yes"/>
+			 <Component Id="ChocoPM" Guid="FEC05756-A55E-4AA5-9B8A-5CB978EA7649">
+         <File Name="$(var.ChocoPM.TargetFileName)" Source="$(var.ChocoPM.TargetPath)" KeyPath="yes" Checksum="yes">
+           <Shortcut Id="ApplicationStartMenuShortcut" Directory="ProgramMenuFolder" Name="ChocoPM" Description="Chocolatey Package Manger" WorkingDirectory="INSTALLFOLDER" Icon="ProgramIcon.exe" IconIndex="0" Advertise="yes" />
+         </File>
          <File Name="$(var.ChocoPM.TargetFileName).config" Source="$(var.ChocoPM.TargetDir)\$(var.ChocoPM.TargetFileName).config"/>
-			 </Component>
+       </Component>
       <Component Id="AutoMapper" Guid="ddcf3d76-fa12-4563-b5ce-ed289e0dae39">
         <File Name="AutoMapper.dll" Source="$(var.ChocoPM.TargetDir)\AutoMapper.dll"/>
       </Component>
