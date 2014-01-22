@@ -4,12 +4,12 @@ using System.Windows.Data;
 
 namespace ChocoPM.Converters
 {
-    public class BooleanToVisibility : IValueConverter
+    public class BooleanToVisibility : DependencyObject, IValueConverter
     {
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return (value == null || (bool)value == false) ? Visibility.Collapsed : Visibility.Visible;
+            return ((value == null || (bool)value == false) ^ (parameter != null && bool.Parse((string)parameter))) ? Visibility.Collapsed : Visibility.Visible;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

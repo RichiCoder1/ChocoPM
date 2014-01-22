@@ -10,13 +10,6 @@ namespace ChocoPM.ViewModels
             Mapper.CreateMap<Services.V2FeedPackage, PackageViewModel>();
         }
 
-        private bool _loaded;
-        public bool Loaded
-        {
-            get { return _loaded; }
-            set { SetPropertyValue(ref _loaded, value); }
-        }
-
         public PackageViewModel(Services.V2FeedPackage feedPackage)
         {
             Mapper.Map(feedPackage, this);
@@ -28,6 +21,11 @@ namespace ChocoPM.ViewModels
         {
             get { return _authors; }
             set { SetPropertyValue(ref _authors, value); }
+        }
+
+        public bool CanUpdate
+        {
+            get { return IsInstalled && !IsLatestVersion; }
         }
 
         private string _copyright;
@@ -91,6 +89,13 @@ namespace ChocoPM.ViewModels
         {
             get { return _isAbsoluteLatestVersion; }
             set { SetPropertyValue(ref _isAbsoluteLatestVersion, value); }
+        }
+
+        public bool IsInstalled
+        {
+
+            // Todo: Check local Package Service
+            get { return false; }
         }
 
         private bool _isLatestVersion;
@@ -219,6 +224,20 @@ namespace ChocoPM.ViewModels
             set { SetPropertyValue(ref _versionDownloadCount, value); }
         }
 		
+        #endregion
+
+        #region Package Methods
+        public void Install()
+        {
+        }
+
+        public void Remove()
+        {
+        }
+
+        public void Update()
+        {
+        }
         #endregion
     }
 }

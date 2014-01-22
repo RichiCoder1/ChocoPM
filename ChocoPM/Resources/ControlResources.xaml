@@ -50,4 +50,20 @@
         <Setter Property="VerticalAlignment" Value="Center"/>
         <Setter Property="FontSize" Value="14"/>
     </Style>
+
+    <Style x:Key="EntypoIconStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontFamily" Value="/ChocoPM;component/Resources/#Entypo"></Setter>
+        <Setter Property="Foreground" Value="#FFFFFFFF"></Setter>
+    </Style>
+
+    <Style x:Key="EntypoIconLargeStyle" BasedOn="{StaticResource EntypoIconStyle}" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="52"/>
+    </Style>
+
+    <Style x:Key="BigIconButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MetroCircleButtonStyle}">
+        <Setter Property="Width" Value="80"/>
+        <Setter Property="Height" Value="80"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+
 </ResourceDictionary>

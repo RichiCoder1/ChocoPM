@@ -1,4 +1,5 @@
 ﻿using ChocoPM.Views;
+using System.Windows;
 using ChocoPM.IoC;
 using Ninject;
 

@@ -65,7 +65,7 @@
                             <Style BasedOn="{StaticResource PageTextBlockStyle}" TargetType="{x:Type TextBlock}"/>
                         </Grid.Resources>
                         <TextBlock Grid.Column="1">Page</TextBlock>
-                        <controls:NumericUpDown Grid.Column="2" Value="{Binding CurrentPage}" Maximum="{Binding PageCount}" Minimum="0"></controls:NumericUpDown>
+                        <controls:NumericUpDown Grid.Column="2" Value="{Binding CurrentPage, UpdateSourceTrigger=PropertyChanged}" Maximum="{Binding PageCount}" Minimum="0"></controls:NumericUpDown>
                         <TextBlock Grid.Column="3">Of <Run Text="{Binding PageCount}" Foreground="LightGray"></Run></TextBlock>
                     </Grid>
 
@@ -78,44 +78,53 @@
                         <controls:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" IsActive="{Binding Loading}"></controls:ProgressRing>
                     </Grid>
 
-                    <Grid x:Name="PackageViewGrid" DataContext="{Binding SelectedPackage}"
-                          Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="20,0,0,0"
+                    <DockPanel x:Name="PackageViewGrid" LastChildFill="True" DataContext="{Binding SelectedPackage}" d:DataContext="{d:DesignInstance vm:PackageViewModel}"
+                          Grid.Column="1" Grid.Row="0" Grid.RowSpan="4" Margin="20,0,0,0"
                           Visibility="{Binding DataContext, RelativeSource={RelativeSource Self}, FallbackValue=Collapsed, Converter={StaticResource NullToVisibility}}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="120"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.ColumnSpan="2">
-                            <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextStyle}"/>
-                            <TextBlock Style="{StaticResource SubtitleTextStyle}">By: <Run Text="{Binding Authors}"></Run></TextBlock>
+                        <StackPanel DockPanel.Dock="Top" Grid.ColumnSpan="2">
+                            <TextBlock Style="{StaticResource TitleTextStyle}"><Run Text="{Binding Title}"></Run> <Run Text="{Binding Version}" Style="{StaticResource SubtitleRunTextStyle}"></Run></TextBlock>
+                            <TextBlock Style="{StaticResource SubtitleTextStyle}"> By: <Run Text="{Binding Authors}"></Run></TextBlock>
                         </StackPanel>
-                        <StackPanel Grid.Row="1" Grid.Column="0">
-                            <Label Style="{StaticResource PackageResourceLabel}">Version Downloads:</Label>
+                        <StackPanel DockPanel.Dock="Left">
+                            <TextBlock Style="{StaticResource PackageResourceLabel}">Downloads:</TextBlock>
                             <TextBlock Text="{Binding VersionDownloadCount}" Style="{StaticResource PackageResourceValue}"></TextBlock>
-                            <Label Style="{StaticResource PackageResourceLabel}">Total Downloads:</Label>
+                            <TextBlock Style="{StaticResource PackageResourceLabel}">Total Downloads:</TextBlock>
                             <TextBlock Text="{Binding DownloadCount}" Style="{StaticResource PackageResourceValue}"></TextBlock>
-                            <Label Style="{StaticResource PackageResourceLabel}">Last Updated:</Label>
+                            <TextBlock Style="{StaticResource PackageResourceLabel}">Created:</TextBlock>
+                            <TextBlock Text="{Binding Created}" Style="{StaticResource PackageResourceValue}"></TextBlock>
+                            <TextBlock Style="{StaticResource PackageResourceLabel}">Last Updated:</TextBlock>
                             <TextBlock Text="{Binding LastUpdated}" Style="{StaticResource PackageResourceValue}"></TextBlock>
-                            <Label Style="{StaticResource PackageResourceLabel}">Package Size (bytes):</Label>
+                            <TextBlock Style="{StaticResource PackageResourceLabel}">Package Size (bytes):</TextBlock>
                             <TextBlock Text="{Binding PackageSize, Converter={StaticResource LongSizeToFileSizeString}}" Style="{StaticResource PackageResourceValue}"></TextBlock>
 
-                            <StackPanel Margin="5,5,0,0">
+                            <StackPanel Margin="5,5,0,40">
                                 <TextBlock Visibility="{Binding ProjectUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}"><Hyperlink NavigateUri="{Binding ProjectUrl}" RequestNavigate="HandleLinkClick">Project Site</Hyperlink></TextBlock>
                                 <TextBlock Visibility="{Binding LicenseUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}"><Hyperlink NavigateUri="{Binding LicenseUrl}" RequestNavigate="HandleLinkClick">Licence</Hyperlink></TextBlock>
                                 <TextBlock Visibility="{Binding GalleryDetailsUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}"><Hyperlink NavigateUri="{Binding GalleryDetailsUrl}" RequestNavigate="HandleLinkClick">Gallery</Hyperlink></TextBlock>
                                 <TextBlock Visibility="{Binding ReportAbuseUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}"><Hyperlink NavigateUri="{Binding ReportAbuseUrl}" RequestNavigate="HandleLinkClick">Report Abuse</Hyperlink></TextBlock>
                             </StackPanel>
+
+                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Install}" ToolTip="Install" Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}, ConverterParameter=True}">
+                                <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#59256;</TextBlock>
+                            </Button>
+                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Remove}" ToolTip="Remove" Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}">
+                                <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#59177;</TextBlock>
+                            </Button>
+                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Update}" ToolTip="Update" Visibility="{Binding CanUpdate, Converter={StaticResource BooleanToVisibility}}">
+                                <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#128260;</TextBlock>
+                            </Button>
+
                         </StackPanel>
 
-                        <Grid Grid.Row="1" Grid.Column="1">
+                        <Grid DockPanel.Dock="Right">
+                            <Image Source="{Binding IconUrl}" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                        </Grid>
+                        
+                        <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="2*"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
@@ -126,17 +135,16 @@
                                   HorizontalAlignment="Stretch"
                                   Margin="5"
                                   Document="{Binding Description, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
-                            <TextBlock Grid.Row="2" Text="Release Notes:" Style="{StaticResource SectionHeaderTextStyle}"/>
+                            <TextBlock Grid.Row="3" Text="Release Notes:" Style="{StaticResource SectionHeaderTextStyle}"/>
                             <FlowDocumentScrollViewer 
-                                  Grid.Row="3"
+                                  Grid.Row="4"
                                   VerticalAlignment="Stretch"
                                   HorizontalAlignment="Stretch"
                                   Margin="5"
                                   Document="{Binding ReleaseNotes, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
-                        </Grid>
 
-                        <Image Grid.Row="0" Grid.Column="2" Source="{Binding IconUrl}" Width="100" Height="100" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    </Grid>
+                        </Grid>
+                    </DockPanel>
                 </Grid>
             </TabItem>
             <TabItem Header="Installed Packages">

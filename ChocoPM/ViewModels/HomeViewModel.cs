@@ -97,8 +97,8 @@ namespace ChocoPM.ViewModels
             _sortDescending = true;
             _currentPage = 0;
             _pageSize = 50;
-            _totalCount = _service.Packages.LongCount();
-            _pageCount = _totalCount / _pageSize + (_totalCount % _pageSize > 0 ? 1 : 0);
+            _totalCount = _service.Packages.Where(package => package.IsLatestVersion && package.Title != null && package.Title != string.Empty).LongCount();
+            _pageCount = _totalCount / _pageSize;
             Packages = new ObservableCollection<PackageViewModel>();
 
             LoadPackages();
