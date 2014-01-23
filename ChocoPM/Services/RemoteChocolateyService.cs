@@ -20,5 +20,11 @@ namespace ChocoPM.Services
             // Todo: All this URI to be swapped with other NuGet compatible APIs
             _service = new FeedContext_x0060_1(new Uri("http://chocolatey.org/api/v2")); 
         }
+
+
+        public V2FeedPackage GetLatest(string id)
+        {
+            return _service.Packages.Where(package => package.Id == id && package.IsLatestVersion).FirstOrDefault();
+        }
     }
 }

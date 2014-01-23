@@ -1,18 +1,32 @@
 ﻿using AutoMapper;
+using ChocoPM.Services;
+using ChocoPM.Models;
+using System.Reactive.Linq;
 using System;
+using System.ComponentModel;
+using Ninject;
 
 namespace ChocoPM.ViewModels
 {
-    public class PackageViewModel : ViewModelBase
+    public class PackageViewModel : ObservableBase
     {
         static PackageViewModel()
         {
             Mapper.CreateMap<Services.V2FeedPackage, PackageViewModel>();
         }
 
-        public PackageViewModel(Services.V2FeedPackage feedPackage)
+        private readonly ILocalChocolateyService _localService;
+        private readonly IRemoteChocolateyService _remoteService;
+        public PackageViewModel(ILocalChocolateyService localService, IRemoteChocolateyService remoteService, Services.V2FeedPackage feedPackage)
         {
             Mapper.Map(feedPackage, this);
+            _localService = localService;
+            _remoteService = remoteService;
+
+            Observable.FromEventPattern<PropertyChangedEventArgs>(_localService, "PropertyChanged")
+                .Where(e => e.EventArgs.PropertyName == "Packages")
+                .Throttle(TimeSpan.FromMilliseconds(50))
+                .Subscribe(e => NotifyPropertyChanged("IsInstalled"));
         }
 
         #region Properties
@@ -93,9 +107,7 @@ namespace ChocoPM.ViewModels
 
         public bool IsInstalled
         {
-
-            // Todo: Check local Package Service
-            get { return false; }
+            get { return _localService.IsInstalled(_id, _version); }
         }
 
         private bool _isLatestVersion;
@@ -206,7 +218,7 @@ namespace ChocoPM.ViewModels
         private string _title;
         public string Title
         {
-            get { return _title; }
+            get { return string.IsNullOrWhiteSpace(_title) ? Id : _title; }
             set { SetPropertyValue(ref _title, value); }
         }
 
@@ -215,6 +227,15 @@ namespace ChocoPM.ViewModels
         {
             get { return _version; }
             set { SetPropertyValue(ref _version, value); }
+        }
+
+        public string LatestVersion
+        {
+            get
+            {
+                var latest = _remoteService.GetLatest(Id);
+                return latest != null ? latest.Version : Version; 
+            }
         }
 
         private int _versionDownloadCount;
@@ -227,16 +248,19 @@ namespace ChocoPM.ViewModels
         #endregion
 
         #region Package Methods
-        public void Install()
+        public async void Install()
         {
+            await _localService.InstallPackageAsync(Id, Version);
         }
 
-        public void Remove()
+        public async void Remove()
         {
+            await _localService.UninstallPackageAsync(Id, Version);
         }
 
-        public void Update()
+        public async void Update()
         {
+            await _localService.UpdatePackageAsync(Id);
         }
         #endregion
     }

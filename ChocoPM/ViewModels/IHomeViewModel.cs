@@ -1,13 +1,17 @@
-﻿using System.Collections.ObjectModel;
+﻿using ChocoPM.Services;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ChocoPM.ViewModels
 {
     public interface IHomeViewModel
     {
-        string SearchQuery { get; set; }
-        ObservableCollection<PackageViewModel> Packages { get; set;  }
-        PackageViewModel SelectedPackage { get; set; }
-        string SortColumn { get; set; }
-        bool SortDescending { get; set; }
+        AvailablePackagesViewModel AvailablePackagesViewModel { get; }
+        InstalledPackagesViewModel InstalledPackagesViewModel { get; }
+        IRemoteChocolateyService RemoteService { get; }
+        ILocalChocolateyService LocalService { get; }
     }
 }

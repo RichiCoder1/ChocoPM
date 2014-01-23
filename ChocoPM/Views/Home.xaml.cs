@@ -22,7 +22,7 @@ namespace ChocoPM.Views
             DataContext = vm;
             _vm = vm;
 
-            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(_vm.Packages, "CollectionChanged")
+            Observable.FromEventPattern<NotifyCollectionChangedEventArgs>(_vm.AvailablePackagesViewModel.Packages, "CollectionChanged")
                 .Throttle(TimeSpan.FromMilliseconds(50))
                 .Distinct()
                 .ObserveOnDispatcher()
@@ -32,14 +32,14 @@ namespace ChocoPM.Views
         void Packages_CollectionChanged()
         {
             AvailablePackagesList.Items.SortDescriptions.Clear();
-            if(!string.IsNullOrWhiteSpace(_vm.SortColumn))
-                AvailablePackagesList.Items.SortDescriptions.Add(new SortDescription(_vm.SortColumn, _vm.SortDescending ? ListSortDirection.Descending : ListSortDirection.Ascending));
+            if(!string.IsNullOrWhiteSpace(_vm.AvailablePackagesViewModel.SortColumn))
+                AvailablePackagesList.Items.SortDescriptions.Add(new SortDescription(_vm.AvailablePackagesViewModel.SortColumn, _vm.AvailablePackagesViewModel.SortDescending ? ListSortDirection.Descending : ListSortDirection.Ascending));
 
             foreach (var column in AvailablePackagesList.Columns)
             {
-                if (column.GetSortMemberPath() == _vm.SortColumn)
+                if (column.GetSortMemberPath() == _vm.AvailablePackagesViewModel.SortColumn)
                 {
-                    column.SortDirection = _vm.SortDescending ? ListSortDirection.Descending : ListSortDirection.Ascending;
+                    column.SortDirection = _vm.AvailablePackagesViewModel.SortDescending ? ListSortDirection.Descending : ListSortDirection.Ascending;
                 }
                 else
                     column.SortDirection = null;
@@ -69,8 +69,8 @@ namespace ChocoPM.Views
                 {
                     sortDescending = false;
                 }
-                _vm.SortDescending = sortDescending;
-                _vm.SortColumn = sortPropertyName;
+                _vm.AvailablePackagesViewModel.SortDescending = sortDescending;
+                _vm.AvailablePackagesViewModel.SortColumn = sortPropertyName;
                 e.Handled = true;
             }
         }

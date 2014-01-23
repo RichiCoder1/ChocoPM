@@ -1,7 +1,15 @@
-﻿namespace ChocoPM.Services
+﻿using ChocoPM.ViewModels;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Threading.Tasks;
+namespace ChocoPM.Services
 {
-    interface ILocalChocolateyService
+    public interface ILocalChocolateyService : INotifyPropertyChanged
     {
-        // Todo: Stuff
+        IEnumerable<V2FeedPackage> GetPackages();
+        Task<bool> UninstallPackageAsync(string id, string version);
+        Task<bool> InstallPackageAsync(string id, string version = null);
+        bool IsInstalled(string id, string version);
+        Task<bool> UpdatePackageAsync(string id);
     }
 }

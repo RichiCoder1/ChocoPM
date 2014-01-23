@@ -103,6 +103,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Rx-XAML.2.2.2\lib\net45\System.Reactive.Windows.Threading.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Spatial, Version=5.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -143,6 +144,7 @@
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Converters\NullToVisibility.cs" />
     <Compile Include="IoC\MainModule.cs" />
+    <Compile Include="Models\ObservableBase.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Service References\Services\Reference.cs">
       <AutoGen>True</AutoGen>
@@ -154,8 +156,12 @@
     <Compile Include="Services\IRemoteChocolateyService.cs" />
     <Compile Include="Services\RemoteChocolateyService.cs" />
     <Compile Include="Converters\UriToVisibility.cs" />
+    <Compile Include="ViewModels\AvailablePackagesViewModel.cs" />
+    <Compile Include="ViewModels\IMainWindowViewModel.cs" />
+    <Compile Include="ViewModels\IHomeViewModel.cs" />
+    <Compile Include="ViewModels\InstalledPackagesViewModel.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\PackageViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
     </Compile>
@@ -171,7 +177,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ViewModels\IHomeViewModel.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -266,9 +271,7 @@
     <Resource Include="Resources\Entypo-license.txt" />
     <Resource Include="Icon.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Markdown.Xaml\Markdown.Xaml.csproj">
       <Project>{34186c3b-c308-4cae-b462-db7b5f5e378c}</Project>

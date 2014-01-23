@@ -3,6 +3,7 @@
      xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
 	<Product Id="*" Name="ChocoPM" Language="1033" Version="0.1" Manufacturer="Rash Apps" UpgradeCode="34f1c107-b1aa-447a-95bb-ebcffaa2e9c2">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+    <Binary Id="ChocolateyAction" SourceFile="$(var.ChocolateyAction.TargetPath)"/>
 
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <Media Id="1" Cabinet="ChocoPM.cab" EmbedCab="yes" CompressionLevel="high"/>
@@ -12,14 +13,28 @@
 		<Feature Id="Complete" Title="Choco Package Manager" Level="1">
 			<ComponentGroupRef Id="ProductComponents" />
 		</Feature>
+
+    <Property Id="CHOCOLATEYINSTALLED">No</Property>
+    <CustomAction Id="CheckForChocolateyAction" BinaryKey="ChocolateyAction" DllEntry="CheckForChocolatey" Execute="immediate" Return="check"/>
     
-    <UI>
-      <UIRef Id="WixUI_Minimal" />
-    </UI>
+    <UIRef Id="WixUI_Minimal" />
 
     <PropertyRef Id="NETFRAMEWORK45"/>
+
+    <InstallExecuteSequence>
+      <Custom Action="CheckForChocolateyAction" Before="LaunchConditions"/>
+    </InstallExecuteSequence>
+
+    <InstallUISequence>
+      <Custom Action="CheckForChocolateyAction" Before="LaunchConditions"/>
+    </InstallUISequence>
+    
     <Condition Message="This application requires .NET Framework 4.5. Please install the .NET Framework then run this installer again.">
       <![CDATA[Installed OR NETFRAMEWORK45]]>
+    </Condition>
+
+    <Condition Message="You must install Chocolatey before installing this app.">
+      <![CDATA[CHOCOLATEYINSTALLED = "Yes" OR Installed]]>
     </Condition>
 	</Product>
 

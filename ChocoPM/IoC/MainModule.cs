@@ -8,6 +8,7 @@ namespace ChocoPM.IoC
         public override void Load()
         {
             Bind<IHomeViewModel>().To<HomeViewModel>();
+            Bind<IMainWindowViewModel>().To<MainWindowViewModel>().InSingletonScope();
             Bind<ILocalChocolateyService>().To<LocalChocolateyService>().InSingletonScope();
             Bind<IRemoteChocolateyService>().To<RemoteChocolateyService>().InSingletonScope();
         }

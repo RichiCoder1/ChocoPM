@@ -1,0 +1,5 @@
+LIBRARY "ChocolateyAction"
+
+EXPORTS
+
+CheckForChocolatey
