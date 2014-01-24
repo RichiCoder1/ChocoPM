@@ -15,16 +15,16 @@
     <Window.Resources>
         <cvrts:BooleanToVisibility x:Key="BooleanToVisibility"/>
     </Window.Resources>
-    <Grid>
-        <Frame x:Name="PageFrame"></Frame>
+    <Grid Name="WindowGrid">
+        <Frame Name="PageFrame" AutomationProperties.Name="Page Frame"></Frame>
         <!-- Loading Overlay -->
-        <Grid Visibility="{Binding IsProcessing, Converter={StaticResource BooleanToVisibility}}">
+        <Grid Name="LoadingOverlay" AutomationProperties.Name="Loading Operation Overlay" Visibility="{Binding IsProcessing, Converter={StaticResource BooleanToVisibility}}">
             <Border HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             Background="#FF252525"
                             Opacity=".7" />
             <!--<controls:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" IsActive="{Binding IsProcessing}"></controls:ProgressRing>-->
-            <ctrls:PowershellOutputBox Buffer="{Binding OutputBuffer}" MinWidth="300" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20"/>
+            <ctrls:PowershellOutputBox Buffer="{Binding OutputBuffer}" MinWidth="300" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20" AutomationProperties.Name="PowerShell Output"/>
         </Grid>
     </Grid>
 </controls:MetroWindow>

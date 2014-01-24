@@ -263,5 +263,10 @@ namespace ChocoPM.ViewModels
             await _localService.UpdatePackageAsync(Id);
         }
         #endregion
+
+        public override string ToString()
+        {
+            return Title + (string.IsNullOrWhiteSpace(Version) ? "" : " Version " + Version);
+        }
     }
 }

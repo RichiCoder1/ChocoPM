@@ -22,8 +22,8 @@
         <mrkd:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter" Markdown="{StaticResource Markdown}"/>
     </Page.Resources>
     <Grid x:Name="PackagesGrid">
-        <TabControl>
-            <TabItem Header="{x:Static res:Strings.HomeView_AvailablePackages_Header}" DataContext="{Binding AvailablePackagesViewModel}" d:DataContext="{d:DesignInstance vm:AvailablePackagesViewModel}">
+        <TabControl x:Name="PackagesTab" AutomationProperties.Name="Package Tabs">
+            <TabItem Header="{x:Static res:Strings.HomeView_AvailablePackages_Header}" DataContext="{Binding AvailablePackagesViewModel}" d:DataContext="{d:DesignInstance vm:AvailablePackagesViewModel}" AutomationProperties.Name="{x:Static res:Strings.HomeView_AvailablePackages_Header}">
                 <Grid VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -67,7 +67,7 @@
                         </Grid.ColumnDefinitions>
                         <Button Grid.Column="0" Name="FirstPage" AutomationProperties.Name="Go to First Page" ToolTip="First" Command="{cmds:DataContextCommandAdapter Executed=GoToFirst, CanExecute=CanGoToFirst}">&lt;&lt;</Button>
                         <Button Grid.Column="1" Name="BackPage" AutomationProperties.Name="Go Back a Page" ToolTip="Back" Command="{cmds:DataContextCommandAdapter Executed=GoBack, CanExecute=CanGoBack}">&lt;</Button>
-                        <TextBlock Grid.Column="2" Name="CurrentPage" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding CurrentPage}" Style="{StaticResource PageCountTextStyle}"></TextBlock>
+                        <TextBlock Grid.Column="2" Name="CurrentPage" AutomationProperties.Name="Current Page" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding CurrentPage}" Style="{StaticResource PageCountTextStyle}"></TextBlock>
                         <Button Grid.Column="3" Name="ForwardPage" AutomationProperties.Name="Go Back a Page" ToolTip="Forward" Command="{cmds:DataContextCommandAdapter Executed=GoForward, CanExecute=CanGoForward}">&gt;</Button>
                         <Button Grid.Column="4" Name="LastPage" AutomationProperties.Name="Go to First Page" ToolTip="Last" Command="{cmds:DataContextCommandAdapter Executed=GoToLast, CanExecute=CanGoToLast}">&gt;&gt;</Button>
                     </Grid>
@@ -115,18 +115,18 @@
                                 </TextBlock>
                             </StackPanel>
 
-                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Install}"
+                            <Button Name="InstallAvailablePackage" Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Install}"
                                     ToolTip="{x:Static res:Strings.InstallButton_Tooltip}" AutomationProperties.Name="Install Package"
                                     Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}, ConverterParameter=True}">
                                 <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#59256;</TextBlock>
                             </Button>
-                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Remove}" 
+                            <Button Name="UinstallAvailablePackage" Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Remove}" 
                                     ToolTip="{x:Static res:Strings.UninstallButton_Tooltip}" AutomationProperties.Name="Uninstall Package"
                                     Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}">
                                 <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#59177;</TextBlock>
                             </Button>
-                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Update}"
-                                    ToolTip="{x:Static res:Strings.UpdateButton_Tooltip}" AutomationProperties.Name="Uninstall Package"
+                            <Button Name="UpdateAvailablePackage" Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Update}"
+                                    ToolTip="{x:Static res:Strings.UpdateButton_Tooltip}" AutomationProperties.Name="Update Package"
                                     Visibility="{Binding CanUpdate, Converter={StaticResource BooleanToVisibility}}">
                                 <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#128260;</TextBlock>
                             </Button>
@@ -168,7 +168,7 @@
                     </DockPanel>
                 </Grid>
             </TabItem>
-            <TabItem Header="{x:Static res:Strings.HomeView_InstalledPackages_Header}" DataContext="{Binding InstalledPackagesViewModel}" d:DataContext="{d:DesignInstance vm:InstalledPackagesViewModel}">
+            <TabItem Header="{x:Static res:Strings.HomeView_InstalledPackages_Header}" DataContext="{Binding InstalledPackagesViewModel}" d:DataContext="{d:DesignInstance vm:InstalledPackagesViewModel}" AutomationProperties.Name="{x:Static res:Strings.HomeView_InstalledPackages_Header}">
                 <Grid VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -234,10 +234,13 @@
                             </StackPanel>
 
 
-                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Remove}" ToolTip="Remove">
+                            <Button Name="UninstallInstalledPackage" Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Remove}"
+                                    ToolTip="Uninstall" AutomationProperties.Name="Uninstall Package">
                                 <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#59177;</TextBlock>
                             </Button>
-                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Update}" ToolTip="Update" Visibility="{Binding CanUpdate, Converter={StaticResource BooleanToVisibility}}">
+                            <Button Name="UpdateInstalledPackage" Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Update}" 
+                                    AutomationProperties.Name="Update Package"
+                                    ToolTip="Update" Visibility="{Binding CanUpdate, Converter={StaticResource BooleanToVisibility}}">
                                 <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#128260;</TextBlock>
                             </Button>
 
