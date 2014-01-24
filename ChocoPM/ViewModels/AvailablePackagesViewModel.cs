@@ -145,7 +145,7 @@ namespace ChocoPM.ViewModels
 
                     if (!string.IsNullOrWhiteSpace(SearchQuery))
                     {
-                        query = query.Where(package => (package.Title == null ? package.Id : package.Title).Contains(SearchQuery));
+                        query = query.Where(package => package.Id.Contains(SearchQuery) || package.Title.Contains(SearchQuery) || package.Tags.Contains(SearchQuery));
                     }
                     if (!string.IsNullOrWhiteSpace(SortColumn))
                         query = !SortDescending ? query.OrderBy(this._sortColumn) : query.OrderByDescending(this._sortColumn);
