@@ -1,0 +1,1 @@
+﻿#Install-VirtualPackage 'ChocoPM.portable' 'ChocoPM.install'

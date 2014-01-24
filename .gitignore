@@ -149,3 +149,12 @@ $RECYCLE.BIN/
 
 # Mac crap
 .DS_Store
+
+############
+## Chocolatey Install Stuff
+############
+*.nupkg
+nuget/*/*/tools/*.dll
+nuget/*/*/tools/*.exe
+nuget/*/*/tools/*.msi
+nuget/*/*/tools/*.7z

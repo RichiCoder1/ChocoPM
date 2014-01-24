@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>ChocoPM</id>
+    <title>ChocoPM</title>
+    <version>0.1.0.12</version>
+    <authors>Richard Simpson</authors>
+    <owners>Richard Simpson</owners>
+    <summary>ChocoPM</summary>
+    <description>ChocoPM</description>
+    <projectUrl>https://github.com/RichiCoder1/ChocoPM</projectUrl>
+    <tags>ChocoPM chocolatey GUI</tags>
+    <copyright></copyright>
+    <licenseUrl>https://github.com/RichiCoder1/ChocoPM/blob/master/LICENSE.txt</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <iconUrl>https://raw.github.com/RichiCoder1/ChocoPM/master/Resources/Logo/Icon.png</iconUrl>
+    <dependencies>
+      <dependency id="ChocoPM.install" version="0.1.0.12" />
+    </dependencies>
+    <releaseNotes></releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

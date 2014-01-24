@@ -18,7 +18,9 @@ namespace ChocoPM.Services
         public RemoteChocolateyService()
         {
             // Todo: All this URI to be swapped with other NuGet compatible APIs
-            _service = new FeedContext_x0060_1(new Uri("http://chocolatey.org/api/v2")); 
+            _service = new FeedContext_x0060_1(new Uri("http://chocolatey.org/api/v2"));
+            _service.IgnoreResourceNotFoundException = true;
+            _service.IgnoreMissingProperties = true;
         }
 
 

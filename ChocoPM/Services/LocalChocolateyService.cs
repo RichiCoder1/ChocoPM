@@ -43,6 +43,8 @@ namespace ChocoPM.Services
                     foreach (var packageDesc in packageDescriptions)
                     {
                         var package = _remoteService.Packages.Where(pckge => packageDesc.Id == pckge.Id && packageDesc.Version == pckge.Version).SingleOrDefault();
+                        if (package == null)
+                            continue;
                         packages.Add(package);
                     }
                 }
