@@ -85,8 +85,11 @@
                           Grid.Column="1" Grid.Row="0" Grid.RowSpan="4" Margin="20,0,0,0"
                           Visibility="{Binding DataContext, RelativeSource={RelativeSource Self}, FallbackValue=Collapsed, Converter={StaticResource NullToVisibility}}">
                         <StackPanel DockPanel.Dock="Top" Grid.ColumnSpan="2">
-                            <TextBlock Style="{StaticResource TitleTextStyle}"><Run Text="{Binding Title}" /> <Run Text="{Binding Version}" Style="{StaticResource SubtitleRunTextStyle}" /></TextBlock>
-                            <TextBlock Style="{StaticResource SubtitleTextStyle}"><Run Text="{x:Static res:Strings.HomeView_PackageView_ByLabel}"/> <Run Text="{Binding Authors}" /></TextBlock>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TitleTextStyle}" AutomationProperties.Name="{Binding Title}"><Run Text="{Binding Title}" /></TextBlock>
+                                <TextBlock AutomationProperties.Name="{Binding Version}" VerticalAlignment="Bottom">  <Run Text="{Binding Version}" Style="{StaticResource SubtitleRunTextStyle}" /></TextBlock>
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource SubtitleTextStyle}" AutomationProperties.Name="{Binding Authors}"><Run Text="{x:Static res:Strings.HomeView_PackageView_ByLabel}"/> <Run Text="{Binding Authors}" /></TextBlock>
                         </StackPanel>
                         <StackPanel DockPanel.Dock="Left">
                             <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_DownloadsLabel}" Target="{Binding ElementName=VersionDownloadCount}"/>
@@ -115,26 +118,13 @@
                                 </TextBlock>
                             </StackPanel>
 
-                            <Button Name="InstallAvailablePackage" Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Install}"
-                                    ToolTip="{x:Static res:Strings.InstallButton_Tooltip}" AutomationProperties.Name="Install Package"
-                                    Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}, ConverterParameter=True}">
-                                <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#59256;</TextBlock>
-                            </Button>
-                            <Button Name="UinstallAvailablePackage" Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Remove}" 
-                                    ToolTip="{x:Static res:Strings.UninstallButton_Tooltip}" AutomationProperties.Name="Uninstall Package"
-                                    Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}">
-                                <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#59177;</TextBlock>
-                            </Button>
-                            <Button Name="UpdateAvailablePackage" Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Update}"
-                                    ToolTip="{x:Static res:Strings.UpdateButton_Tooltip}" AutomationProperties.Name="Update Package"
-                                    Visibility="{Binding CanUpdate, Converter={StaticResource BooleanToVisibility}}">
-                                <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#128260;</TextBlock>
-                            </Button>
-
+                            <Button Style="{StaticResource InstallButtonStyle}" Command="{cmds:DataContextCommandAdapter Install}"  Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}, ConverterParameter=True}"/>
+                            <Button Style="{StaticResource UninstallButtonStyle}" Command="{cmds:DataContextCommandAdapter Remove}" Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}"/>
+                            <Button Style="{StaticResource UpdateButtonStyle}" Command="{cmds:DataContextCommandAdapter Update}" Visibility="{Binding CanUpdate, Converter={StaticResource BooleanToVisibility}}"/>
                         </StackPanel>
 
                         <Grid DockPanel.Dock="Right">
-                            <Image Source="{Binding IconUrl}" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                            <Image AutomationProperties.Name="Package Icon" Source="{Binding IconUrl}" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                         </Grid>
                         
                         <Grid>
@@ -213,8 +203,12 @@
                           Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="20,0,0,0"
                           Visibility="{Binding DataContext, RelativeSource={RelativeSource Self}, FallbackValue=Collapsed, Converter={StaticResource NullToVisibility}}">
                         <StackPanel DockPanel.Dock="Top" Grid.ColumnSpan="2">
-                            <TextBlock Style="{StaticResource TitleTextStyle}"><Run Text="{Binding Title}"></Run> <Run Text="{Binding Version}" Style="{StaticResource SubtitleRunTextStyle}"></Run></TextBlock>
-                            <TextBlock Style="{StaticResource SubtitleTextStyle}"> By: <Run Text="{Binding Authors}"></Run></TextBlock>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource TitleTextStyle}" AutomationProperties.Name="{Binding Title}"><Run Text="{Binding Title}" /></TextBlock>
+                                <TextBlock AutomationProperties.Name="{Binding Version}" VerticalAlignment="Bottom">  <Run Text="{Binding Version}" Style="{StaticResource SubtitleRunTextStyle}" /></TextBlock>
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource SubtitleTextStyle}" AutomationProperties.Name="{Binding Authors}"><Run Text="{x:Static res:Strings.HomeView_PackageView_ByLabel}"/> <Run Text="{Binding Authors}" /></TextBlock>
+                        </StackPanel>
                         </StackPanel>
                         <StackPanel DockPanel.Dock="Left">
                             <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_DownloadsLabel}" Target="{Binding ElementName=VersionDownloadCount1}"/>
@@ -234,22 +228,14 @@
                                 <TextBlock Visibility="{Binding GalleryDetailsUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}"><Hyperlink NavigateUri="{Binding GalleryDetailsUrl}" RequestNavigate="HandleLinkClick">Gallery</Hyperlink></TextBlock>
                                 <TextBlock Visibility="{Binding ReportAbuseUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}"><Hyperlink NavigateUri="{Binding ReportAbuseUrl}" RequestNavigate="HandleLinkClick">Report Abuse</Hyperlink></TextBlock>
                             </StackPanel>
-
-
-                            <Button Name="UninstallInstalledPackage" Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Remove}"
-                                    ToolTip="Uninstall" AutomationProperties.Name="Uninstall Package">
-                                <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#59177;</TextBlock>
-                            </Button>
-                            <Button Name="UpdateInstalledPackage" Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Update}" 
-                                    AutomationProperties.Name="Update Package"
-                                    ToolTip="Update" Visibility="{Binding CanUpdate, Converter={StaticResource BooleanToVisibility}}">
-                                <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#128260;</TextBlock>
-                            </Button>
+                            
+                            <Button Style="{StaticResource UninstallButtonStyle}" Command="{cmds:DataContextCommandAdapter Remove}"/>
+                            <Button Style="{StaticResource UpdateButtonStyle}" Command="{cmds:DataContextCommandAdapter Update}" Visibility="{Binding CanUpdate, Converter={StaticResource BooleanToVisibility}}"/>
 
                         </StackPanel>
 
                         <Grid DockPanel.Dock="Right">
-                            <Image Source="{Binding IconUrl}" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                            <Image AutomationProperties.Name="Package Icon" Source="{Binding IconUrl}" Width="100" Height="100" HorizontalAlignment="Center" VerticalAlignment="Top"/>
                         </Grid>
 
                         <Grid>

@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:res="clr-namespace:ChocoPM.Properties"
                     xmlns:mrkd="clr-namespace:Markdown.Xaml;assembly=Markdown.Xaml">
     <Style TargetType="FlowDocument" x:Key="DocumentStyle">
         <Setter Property="FontFamily"
@@ -64,6 +65,42 @@
         <Setter Property="Width" Value="80"/>
         <Setter Property="Height" Value="80"/>
         <Setter Property="HorizontalAlignment" Value="Left"/>
+    </Style>
+    
+    <Style x:Key="InstallButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource BigIconButton}">
+        <Setter Property="Content">
+            <Setter.Value>
+                <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#59256;</TextBlock>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="AutomationProperties.Name" Value="Install"/>
+        <Setter Property="AutomationProperties.HelpText" Value="Installs the Package"/>
+        <Setter Property="AutomationProperties.AcceleratorKey" Value="I"/>
+        <Setter Property="ToolTip" Value="{x:Static res:Strings.InstallButton_Tooltip}"/>
+    </Style>
+
+    <Style x:Key="UninstallButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource BigIconButton}">
+        <Setter Property="Content">
+            <Setter.Value>
+                <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#59177;</TextBlock>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="AutomationProperties.Name" Value="Uninstall"/>
+        <Setter Property="AutomationProperties.HelpText" Value="Uninstalls the Package"/>
+        <Setter Property="AutomationProperties.AcceleratorKey" Value="U"/>
+        <Setter Property="ToolTip" Value="{x:Static res:Strings.UninstallButton_Tooltip}"/>
+    </Style>
+
+    <Style x:Key="UpdateButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource BigIconButton}">
+        <Setter Property="Content">
+            <Setter.Value>
+                <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#128260;</TextBlock>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="AutomationProperties.Name" Value="Update"/>
+        <Setter Property="AutomationProperties.HelpText" Value="Updates the Package"/>
+        <Setter Property="AutomationProperties.AcceleratorKey" Value="P"/>
+        <Setter Property="ToolTip" Value="{x:Static res:Strings.UpdateButton_Tooltip}"/>
     </Style>
 
 </ResourceDictionary>
