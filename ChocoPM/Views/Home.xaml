@@ -68,8 +68,8 @@
                         <Button Grid.Column="0" Name="FirstPage" AutomationProperties.Name="Go to First Page" ToolTip="First" Command="{cmds:DataContextCommandAdapter Executed=GoToFirst, CanExecute=CanGoToFirst}">&lt;&lt;</Button>
                         <Button Grid.Column="1" Name="BackPage" AutomationProperties.Name="Go Back a Page" ToolTip="Back" Command="{cmds:DataContextCommandAdapter Executed=GoBack, CanExecute=CanGoBack}">&lt;</Button>
                         <TextBlock Grid.Column="2" Name="CurrentPage" AutomationProperties.Name="Current Page" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding CurrentPage}" Style="{StaticResource PageCountTextStyle}"></TextBlock>
-                        <Button Grid.Column="3" Name="ForwardPage" AutomationProperties.Name="Go Back a Page" ToolTip="Forward" Command="{cmds:DataContextCommandAdapter Executed=GoForward, CanExecute=CanGoForward}">&gt;</Button>
-                        <Button Grid.Column="4" Name="LastPage" AutomationProperties.Name="Go to First Page" ToolTip="Last" Command="{cmds:DataContextCommandAdapter Executed=GoToLast, CanExecute=CanGoToLast}">&gt;&gt;</Button>
+                        <Button Grid.Column="3" Name="ForwardPage" AutomationProperties.Name="Go Forward a Page" ToolTip="Forward" Command="{cmds:DataContextCommandAdapter Executed=GoForward, CanExecute=CanGoForward}">&gt;</Button>
+                        <Button Grid.Column="4" Name="LastPage" AutomationProperties.Name="Go to Last Page" ToolTip="Last" Command="{cmds:DataContextCommandAdapter Executed=GoToLast, CanExecute=CanGoToLast}">&gt;&gt;</Button>
                     </Grid>
 
                     <!-- Loading Overlay -->
@@ -146,6 +146,7 @@
                             </Grid.RowDefinitions>
                             <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_DescriptionLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
                             <FlowDocumentScrollViewer 
+                                    Name="AvailablePackageDescription" AutomationProperties.Name="Package Description"
                                     Grid.Row="1"
                                   VerticalAlignment="Stretch"
                                   HorizontalAlignment="Stretch"
@@ -153,11 +154,12 @@
                                   Document="{Binding Description, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
                             <StackPanel Grid.Row="2" Visibility="{Binding Dependencies, Converter={StaticResource NullToVisibility}}">
                                 <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_DependenciesLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
-                                <TextBlock Text="{Binding Dependencies, Converter={StaticResource PackageDependenciesToString}}" Foreground="White" Margin="5" Style="{StaticResource PageTextBlockStyle}"/>
+                                <TextBlock Text="{Binding Dependencies, Converter={StaticResource PackageDependenciesToString}}" Foreground="White" Margin="5" Style="{StaticResource PageTextBlockStyle}" AutomationProperties.Name="Package Dependencies"/>
                             </StackPanel>
                             <StackPanel Grid.Row="3" Visibility="{Binding ReleaseNotes, Converter={StaticResource NullToVisibility}}">
                                 <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_ReleaseNotesLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
                                 <FlowDocumentScrollViewer 
+                                    Name="AvailablePackageReleaseNotes" AutomationProperties.Name="Package Release Notes"
                                   VerticalAlignment="Stretch"
                                   HorizontalAlignment="Stretch"
                                   Margin="5"
@@ -255,23 +257,29 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="2*"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
-                            <TextBlock Text="Description:" Style="{StaticResource SectionHeaderTextStyle}"/>
+                            <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_DescriptionLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
                             <FlowDocumentScrollViewer 
+                                    Name="InstalledPackageDescription" AutomationProperties.Name="Package Description"
                                     Grid.Row="1"
                                   VerticalAlignment="Stretch"
                                   HorizontalAlignment="Stretch"
                                   Margin="5"
                                   Document="{Binding Description, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
-                            <TextBlock Grid.Row="3" Text="Release Notes:" Style="{StaticResource SectionHeaderTextStyle}"/>
-                            <FlowDocumentScrollViewer 
-                                  Grid.Row="4"
+                            <StackPanel Grid.Row="2" Visibility="{Binding Dependencies, Converter={StaticResource NullToVisibility}}">
+                                <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_DependenciesLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
+                                <TextBlock Text="{Binding Dependencies, Converter={StaticResource PackageDependenciesToString}}" Foreground="White" Margin="5" Style="{StaticResource PageTextBlockStyle}" AutomationProperties.Name="Package Dependencies"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="3" Visibility="{Binding ReleaseNotes, Converter={StaticResource NullToVisibility}}">
+                                <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_ReleaseNotesLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
+                                <FlowDocumentScrollViewer 
+                                    Name="InstalledPackageReleaseNotes" AutomationProperties.Name="Package Release Notes"
                                   VerticalAlignment="Stretch"
                                   HorizontalAlignment="Stretch"
                                   Margin="5"
                                   Document="{Binding ReleaseNotes, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
+                            </StackPanel>
 
                         </Grid>
                     </DockPanel>
