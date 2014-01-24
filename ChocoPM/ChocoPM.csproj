@@ -142,6 +142,7 @@
     <Compile Include="Converters\BooleanToVisibility.cs" />
     <Compile Include="Converters\LongSizeToFileSizeString.cs" />
     <Compile Include="Converters\PackageDependenciesToString.cs" />
+    <Compile Include="Extensions\AsyncExtensions.cs" />
     <Compile Include="Helpers\AsyncHelpers.cs" />
     <Compile Include="Extensions\DataGridExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />

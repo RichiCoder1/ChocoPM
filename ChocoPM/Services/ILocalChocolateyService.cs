@@ -6,7 +6,7 @@ namespace ChocoPM.Services
 {
     public interface ILocalChocolateyService : INotifyPropertyChanged
     {
-        IEnumerable<V2FeedPackage> GetPackages();
+        Task<IEnumerable<V2FeedPackage>> GetPackages(bool logOutput = false);
         Task<bool> UninstallPackageAsync(string id, string version);
         Task<bool> InstallPackageAsync(string id, string version = null);
         bool IsInstalled(string id, string version);

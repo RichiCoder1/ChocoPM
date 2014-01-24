@@ -29,14 +29,15 @@ namespace ChocoPM.ViewModels
             _remoteService = remoteService;
             _localService = localService;
 
-            AvailablePackagesViewModel = new ViewModels.AvailablePackagesViewModel(this);
-            InstalledPackagesViewModel = new ViewModels.InstalledPackagesViewModel(this);
-
-            var test = localService.GetPackages().ToList();
+            _lazyAvailableVm = new Lazy<AvailablePackagesViewModel>(() => new AvailablePackagesViewModel(this));
+            _lazyInstalledVm = new Lazy<InstalledPackagesViewModel>(() => new InstalledPackagesViewModel(this));
         }
 
-        public AvailablePackagesViewModel AvailablePackagesViewModel { get; private set; }
+        private readonly Lazy<AvailablePackagesViewModel> _lazyAvailableVm; 
+        public AvailablePackagesViewModel AvailablePackagesViewModel { get { return _lazyAvailableVm.Value; } }
 
-        public InstalledPackagesViewModel InstalledPackagesViewModel { get; private set; }
+        private readonly Lazy<InstalledPackagesViewModel> _lazyInstalledVm;
+        public InstalledPackagesViewModel InstalledPackagesViewModel { get { return _lazyInstalledVm.Value; } }
+
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using ChocoPM.ViewModels;
 using ChocoPM.Models;
-using ChocoPM.Helpers;
+using ChocoPM.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,51 +15,98 @@ namespace ChocoPM.Services
 {
     public class LocalChocolateyService : ObservableBase, ILocalChocolateyService
     {
-        private readonly MemoryCache Cache = MemoryCache.Default;
-        private const string LocalCacheKeyName = "LocalChocolateyService.Packages";
-
-        private readonly IRemoteChocolateyService _remoteService;
         public LocalChocolateyService(IRemoteChocolateyService remoteService)
         {
             _remoteService = remoteService;
-        }
+            _rs = RunspaceFactory.CreateRunspace();
+            _rs.Open();
+            _ss = new SemaphoreSlim(1);
+        }        
+        
+        private readonly Runspace _rs;
+        private readonly SemaphoreSlim _ss;
+        private readonly MemoryCache _cache = MemoryCache.Default;
+        private const string LocalCacheKeyName = "LocalChocolateyService.Packages";
+        private readonly IRemoteChocolateyService _remoteService;
 
-        private readonly PowerShell _ps = PowerShell.Create();
-
-        public IEnumerable<V2FeedPackage> GetPackages()
+        public async Task<IEnumerable<V2FeedPackage>> GetPackages(bool logOutput = false)
         {
-            var packages = (List<V2FeedPackage>)Cache.Get(LocalCacheKeyName);
+            if (logOutput)
+            {
+                _mainWindowVm.OutputBuffer.Clear();
+                isProcessing = true;
+            }
+                
+            if(logOutput)
+                WriteOutput("Checking cache for packages...");
+
+            await _ss.WaitAsync(200);
+
+            var packages = (List<V2FeedPackage>) this._cache.Get(LocalCacheKeyName);
             if (packages != null)
             {
+                if(logOutput)
+                    WriteOutput("Found cached packages");
+
+                _ss.Release();
                 return packages;
             }
 
-            var packageNames = AsyncHelpers.RunSynchronously(() => 
-                RunPackageCommand("chocolatey list -lo", refreshPackages: false, logOutput: false)).Select(obj => obj.ToString());
+            if(logOutput)
+                WriteOutput("Retrieving local package list.");
+
+            var packageResults = await RunPackageCommand("chocolatey list -lo", refreshPackages: false, logOutput: false, clearBuffer: false);
+
+            var packageNames = packageResults != null
+                ? packageResults.Select(obj => obj.ToString())
+                : new List<string>();
 
             var packageDescriptions =
                 packageNames.Select(packageName => packageName.Split(' '))
                             .Where(packageArray => packageArray.Count() == 2)
-                            .Select(packageArray => new { Id = packageArray[0], Version = packageArray[1] });
+                            .Select(packageArray => new {
+                                Id = packageArray[0],
+                                Version = packageArray[1]
+                            }).ToList();
+            if(logOutput)
+                WriteOutput("Found " + packageDescriptions.Count() + " local packges.");
 
             packages = new List<V2FeedPackage>();
             foreach (var packageDesc in packageDescriptions)
             {
                 // ReSharper disable once ReplaceWithSingleCallToSingleOrDefault
-                var package = this._remoteService.Packages.Where(pckge => packageDesc.Id == pckge.Id && packageDesc.Version == pckge.Version).SingleOrDefault();
+                var package =
+                    this._remoteService.Packages.Where(
+                        pckge =>
+                            packageDesc.Id == pckge.Id && packageDesc.Version == pckge.Version)
+                        .SingleOrDefault();
+
                 if (package == null)
                     continue;
                 packages.Add(package);
             }
-            this.Cache.Set(LocalCacheKeyName, packages, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromDays(1) });
+            if (logOutput)
+                WriteOutput("Caching packages.");
+
+            this._cache.Set(LocalCacheKeyName, packages, new CacheItemPolicy {
+                SlidingExpiration = TimeSpan.FromDays(1)
+            });
+
+            if (logOutput)
+            {
+                WriteOutput("Done.");
+                (new Action(() => isProcessing = false)).DelayedExecution(TimeSpan.FromMilliseconds(2000));
+            }
+
+            _ss.Release();
             NotifyPropertyChanged("Packages");
             return packages;
         }
 
-        private void RefreshPackages()
+        private async void RefreshPackages(bool logOutput = false)
         {
-            Cache.Remove(LocalCacheKeyName);
-            GetPackages();
+            this._cache.Remove(LocalCacheKeyName);
+            await GetPackages(logOutput);
         }
 
         public async Task<bool> UninstallPackageAsync(string id, string version)
@@ -74,7 +121,12 @@ namespace ChocoPM.Services
 
         public bool IsInstalled(string id, string version)
         {
-            return GetPackages().Any(package => package.Id == id && package.Version == version);
+            if (_cache.Contains(LocalCacheKeyName))
+            {
+                return ((List<V2FeedPackage>)this._cache.Get(LocalCacheKeyName))
+                    .Any(package => package.Id == id && package.Version == version);
+            }
+            return false;
         }
 
         public async Task<bool> UpdatePackageAsync(string id)
@@ -87,16 +139,19 @@ namespace ChocoPM.Services
             return await RunPackageCommand(commandString, refreshPackages) != null;
         }
 
-        public async Task<Collection<PSObject>> RunPackageCommand(string commandString, bool refreshPackages = true, bool logOutput = true)
+        public async Task<Collection<PSObject>> RunPackageCommand(string commandString, bool refreshPackages = true, bool logOutput = true, bool clearBuffer = true)
         {
-            isProcessing = true;
-            _mainWindowVm.OutputBuffer.Clear(); ;
+            if(logOutput)
+                isProcessing = true;
+
+            if(clearBuffer)
+                _mainWindowVm.OutputBuffer.Clear();
+
             var result = await Task.Run(() =>
             {
-                using (var rs = RunspaceFactory.CreateRunspace())
+                lock (_rs)
                 {
-                    rs.Open();
-                    var ps = rs.CreatePipeline(commandString);
+                    var ps = _rs.CreatePipeline(commandString);
                     if (logOutput)
                     {
                         ps.Output.DataReady += (obj, args) =>
@@ -104,11 +159,7 @@ namespace ChocoPM.Services
                             var outputs = ps.Output.NonBlockingRead();
                             foreach (PSObject output in outputs)
                             {
-                                _mainWindowVm.OutputBuffer.Add(
-                                    new PowerShellOutputLine {
-                                        Text = output.ToString(),
-                                        Type = PowerShellLineType.Output
-                                    });
+                                WriteOutput(output.ToString());
                             }
                         };
                         ps.Error.DataReady += (obj, args) =>
@@ -116,11 +167,7 @@ namespace ChocoPM.Services
                             var outputs = ps.Error.NonBlockingRead();
                             foreach (PSObject output in outputs)
                             {
-                                _mainWindowVm.OutputBuffer.Add(
-                                    new PowerShellOutputLine {
-                                        Text = output.ToString(),
-                                        Type = PowerShellLineType.Error
-                                    });
+                                WriteError(output.ToString());
                             }
                         };
                     }
@@ -132,21 +179,39 @@ namespace ChocoPM.Services
                     }
                     catch (Exception e)
                     {
-                        _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine { Text = e.ToString(), Type = PowerShellLineType.Error });
+                        _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine {
+                            Text = e.ToString(),
+                            Type = PowerShellLineType.Error
+                        });
                         return results;
                     }
 
-                    _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine { Text = "Executed successfully...", Type = PowerShellLineType.Output });
+                    _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine {
+                        Text = "Executed successfully...",
+                        Type = PowerShellLineType.Output
+                    });
 
-                    if(refreshPackages)
+                    if (refreshPackages)
                         RefreshPackages();
 
                     return results;
                 }
             });
             Thread.Sleep(200);
-            isProcessing = false;
+            if(logOutput)
+                isProcessing = false;
+
             return result;
+        }
+
+        private void WriteOutput(string message)
+        {
+            _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine{Text = message, Type = PowerShellLineType.Output});
+        }
+
+        private void WriteError(string message)
+        {
+            _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine { Text = message, Type = PowerShellLineType.Error });
         }
 
         internal static IMainWindowViewModel _mainWindowVm;

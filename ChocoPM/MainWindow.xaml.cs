@@ -1,7 +1,5 @@
 ﻿using ChocoPM.Views;
 using ChocoPM.ViewModels;
-using System.Windows;
-using ChocoPM.IoC;
 using Ninject;
 
 namespace ChocoPM
@@ -15,7 +13,7 @@ namespace ChocoPM
         public MainWindow()
         {
             InitializeComponent();
-            var vm = App.Kernel.Get<MainWindowViewModel>();
+            var vm = App.Kernel.Get<IMainWindowViewModel>();
             DataContext = vm;
             Services.LocalChocolateyService._mainWindowVm = vm;
             PageFrame.Navigate(App.Kernel.Get<Home>());

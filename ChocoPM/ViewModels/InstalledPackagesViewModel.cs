@@ -53,7 +53,7 @@ namespace ChocoPM.ViewModels
             _parent = parent;
             Packages = new ObservableCollection<PackageViewModel>();
 
-            LoadPackages();
+            LoadPackages(true);
 
             Observable.FromEventPattern<PropertyChangedEventArgs>(this, "PropertyChanged")
                 .Where(e => e.EventArgs.PropertyName == "SearchQuery")
@@ -71,34 +71,22 @@ namespace ChocoPM.ViewModels
             SelectedPackage = null;
         }
 
-        public async void LoadPackages()
+        public async void LoadPackages(bool logOutput = false)
         {
             Loading = true;
             try
             {
-                var newPackages = await Task.Run(() =>
+                IQueryable<V2FeedPackage> packages = (await _localService.GetPackages(logOutput)).AsQueryable();
+                if (!string.IsNullOrWhiteSpace(SearchQuery))
                 {
-                    IQueryable<V2FeedPackage> packages = _localService.GetPackages().AsQueryable();
-                    if (!string.IsNullOrWhiteSpace(SearchQuery))
-                    {
-                        packages = packages.Where(package => CultureInfo.CurrentCulture.CompareInfo.IndexOf((package.Title == null ? package.Id : package.Title), SearchQuery, CompareOptions.OrdinalIgnoreCase) >= 0);
-                    }
+                    packages = packages.Where(package => CultureInfo.CurrentCulture.CompareInfo.IndexOf((package.Title ?? package.Id), SearchQuery, CompareOptions.OrdinalIgnoreCase) >= 0);
+                }
 
-                    var packagesList = new List<PackageViewModel>();
-                    foreach (var package in packages)
-                    {
-                        var newPackage = App.Kernel.Get<PackageViewModel>(new ConstructorArgument("feedPackage", package));
-                        packagesList.Add(newPackage);
-                    }
-
-                    return packagesList;
-                });
+                var packagesList = packages.Select(package => 
+                                                App.Kernel.Get<PackageViewModel>(new ConstructorArgument("feedPackage", package)))
+                                           .ToList();
                 Packages.Clear();
-                newPackages.ForEach(Packages.Add);
-            }
-            catch
-            {
-                throw;
+                packagesList.ForEach(Packages.Add);
             }
             finally
             {
