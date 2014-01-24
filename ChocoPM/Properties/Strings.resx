@@ -192,4 +192,7 @@
   <data name="UpdateButton_Tooltip" xml:space="preserve">
     <value>Update</value>
   </data>
+  <data name="HomeView_PackageView_DependenciesLabel" xml:space="preserve">
+    <value>Dependencies:</value>
+  </data>
 </root>

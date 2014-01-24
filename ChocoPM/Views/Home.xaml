@@ -18,6 +18,7 @@
         <cvrts:NullToVisibility x:Key="NullToVisibility"/>
         <cvrts:BooleanToVisibility x:Key="BooleanToVisibility"/>
         <cvrts:LongSizeToFileSizeString x:Key="LongSizeToFileSizeString"/>
+        <cvrts:PackageDependenciesToString x:Key="PackageDependenciesToString"/>
         <mrkd:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter" Markdown="{StaticResource Markdown}"/>
     </Page.Resources>
     <Grid x:Name="PackagesGrid">
@@ -41,6 +42,7 @@
           
                     <!-- Packages List -->
                     <DataGrid x:Name="AvailablePackagesList"
+                              AutomationProperties.Name="Available Packages"
                               Grid.Row="1" Grid.Column="0" Margin="5,0,0,0" 
                               ItemsSource="{Binding Packages}" 
                               SelectedItem="{Binding SelectedPackage}"
@@ -58,20 +60,20 @@
                     <Grid Grid.Row="3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Grid.Resources>
-                            <Style BasedOn="{StaticResource PageTextBlockStyle}" TargetType="{x:Type TextBlock}"/>
-                        </Grid.Resources>
-                        <TextBlock Grid.Column="1" Text="{x:Static res:Strings.HomeView_PackagesGrid_PageLabel}"></TextBlock>
-                        <controls:NumericUpDown Grid.Column="2" Value="{Binding CurrentPage, UpdateSourceTrigger=PropertyChanged}" Maximum="{Binding PageCount}" Minimum="0"></controls:NumericUpDown>
-                        <TextBlock Grid.Column="3"><Run Text="{x:Static res:Strings.HomeView_PackagesGrid_PageOfLabel}"></Run> <Run Text="{Binding PageCount}" Foreground="LightGray"></Run></TextBlock>
+                        <Button Grid.Column="0" Name="FirstPage" AutomationProperties.Name="Go to First Page" ToolTip="First" Command="{cmds:DataContextCommandAdapter Executed=GoToFirst, CanExecute=CanGoToFirst}">&lt;&lt;</Button>
+                        <Button Grid.Column="1" Name="BackPage" AutomationProperties.Name="Go Back a Page" ToolTip="Back" Command="{cmds:DataContextCommandAdapter Executed=GoBack, CanExecute=CanGoBack}">&lt;</Button>
+                        <TextBlock Grid.Column="2" Name="CurrentPage" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding CurrentPage}" Style="{StaticResource PageCountTextStyle}"></TextBlock>
+                        <Button Grid.Column="3" Name="ForwardPage" AutomationProperties.Name="Go Back a Page" ToolTip="Forward" Command="{cmds:DataContextCommandAdapter Executed=GoForward, CanExecute=CanGoForward}">&gt;</Button>
+                        <Button Grid.Column="4" Name="LastPage" AutomationProperties.Name="Go to First Page" ToolTip="Last" Command="{cmds:DataContextCommandAdapter Executed=GoToLast, CanExecute=CanGoToLast}">&gt;&gt;</Button>
                     </Grid>
 
                     <!-- Loading Overlay -->
-                    <Grid Grid.RowSpan="3" Visibility="{Binding Loading, Converter={StaticResource BooleanToVisibility}}">
+                    <Grid Grid.RowSpan="4" Visibility="{Binding Loading, Converter={StaticResource BooleanToVisibility}}">
                         <Border HorizontalAlignment="Stretch"
                             VerticalAlignment="Stretch"
                             Background="#FF252525"
@@ -87,16 +89,16 @@
                             <TextBlock Style="{StaticResource SubtitleTextStyle}"><Run Text="{x:Static res:Strings.HomeView_PackageView_ByLabel}"/> <Run Text="{Binding Authors}" /></TextBlock>
                         </StackPanel>
                         <StackPanel DockPanel.Dock="Left">
-                            <TextBlock Style="{StaticResource PackageResourceLabel}" Text="{x:Static res:Strings.HomeView_PackageView_DownloadsLabel}"/>
-                            <TextBlock Text="{Binding VersionDownloadCount}" Style="{StaticResource PackageResourceValue}"></TextBlock>
-                            <TextBlock Style="{StaticResource PackageResourceLabel}" Text="{x:Static res:Strings.HomeView_PackageView_TotalDownloadsLabel}"/>
-                            <TextBlock Text="{Binding DownloadCount}" Style="{StaticResource PackageResourceValue}"></TextBlock>
-                            <TextBlock Style="{StaticResource PackageResourceLabel}" Text="{x:Static res:Strings.HomeView_PackageView_CreatedLabel}"/>
-                            <TextBlock Text="{Binding Created}" Style="{StaticResource PackageResourceValue}"></TextBlock>
-                            <TextBlock Style="{StaticResource PackageResourceLabel}" Text="{x:Static res:Strings.HomeView_PackageView_LastUpdatedLabel}"/>
-                            <TextBlock Text="{Binding LastUpdated}" Style="{StaticResource PackageResourceValue}"></TextBlock>
-                            <TextBlock Style="{StaticResource PackageResourceLabel}" Text="{x:Static res:Strings.HomeView_PackageView_PackageSizeLabel}"/>
-                            <TextBlock Text="{Binding PackageSize, Converter={StaticResource LongSizeToFileSizeString}}" Style="{StaticResource PackageResourceValue}"></TextBlock>
+                            <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_DownloadsLabel}" Target="{Binding ElementName=VersionDownloadCount}"/>
+                            <TextBlock x:Name="VersionDownloadCount" Text="{Binding VersionDownloadCount}" Style="{StaticResource PackageResourceValue}"></TextBlock>
+                            <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_TotalDownloadsLabel}" Target="{Binding ElementName=DownloadCount}"/>
+                            <TextBlock x:Name="DownloadCount" Text="{Binding DownloadCount}" Style="{StaticResource PackageResourceValue}"></TextBlock>
+                            <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_CreatedLabel}" Target="{Binding ElementName=Created}"/>
+                            <TextBlock x:Name="Created" Text="{Binding Created}" Style="{StaticResource PackageResourceValue}"></TextBlock>
+                            <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_LastUpdatedLabel}" Target="{Binding ElementName=LastUpdated}"/>
+                            <TextBlock x:Name="LastUpdated" Text="{Binding LastUpdated}" Style="{StaticResource PackageResourceValue}"></TextBlock>
+                            <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_PackageSizeLabel}" Target="{Binding ElementName=PackageSize}"/>
+                            <TextBlock x:Name="PackageSize" Text="{Binding PackageSize, Converter={StaticResource LongSizeToFileSizeString}}" Style="{StaticResource PackageResourceValue}"></TextBlock>
 
                             <StackPanel Margin="5,5,0,40">
                                 <TextBlock Visibility="{Binding ProjectUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}">
@@ -113,13 +115,19 @@
                                 </TextBlock>
                             </StackPanel>
 
-                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Install}" ToolTip="{x:Static res:Strings.InstallButton_Tooltip}" Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}, ConverterParameter=True}">
+                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Install}"
+                                    ToolTip="{x:Static res:Strings.InstallButton_Tooltip}" AutomationProperties.Name="Install Package"
+                                    Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}, ConverterParameter=True}">
                                 <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#59256;</TextBlock>
                             </Button>
-                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Remove}" ToolTip="{x:Static res:Strings.UninstallButton_Tooltip}" Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}">
+                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Remove}" 
+                                    ToolTip="{x:Static res:Strings.UninstallButton_Tooltip}" AutomationProperties.Name="Uninstall Package"
+                                    Visibility="{Binding IsInstalled, Converter={StaticResource BooleanToVisibility}}">
                                 <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#59177;</TextBlock>
                             </Button>
-                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Update}" ToolTip="{x:Static res:Strings.UpdateButton_Tooltip}" Visibility="{Binding CanUpdate, Converter={StaticResource BooleanToVisibility}}">
+                            <Button Style="{StaticResource BigIconButton}" Command="{cmds:DataContextCommandAdapter Update}"
+                                    ToolTip="{x:Static res:Strings.UpdateButton_Tooltip}" AutomationProperties.Name="Uninstall Package"
+                                    Visibility="{Binding CanUpdate, Converter={StaticResource BooleanToVisibility}}">
                                 <TextBlock Style="{StaticResource EntypoIconLargeStyle}">&#128260;</TextBlock>
                             </Button>
 
@@ -134,7 +142,6 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="2*"/>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_DescriptionLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
@@ -144,13 +151,18 @@
                                   HorizontalAlignment="Stretch"
                                   Margin="5"
                                   Document="{Binding Description, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
-                            <TextBlock Grid.Row="3" Text="{x:Static res:Strings.HomeView_PackageView_ReleaseNotesLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
-                            <FlowDocumentScrollViewer 
-                                  Grid.Row="4"
+                            <StackPanel Grid.Row="2" Visibility="{Binding Dependencies, Converter={StaticResource NullToVisibility}}">
+                                <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_DependenciesLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
+                                <TextBlock Text="{Binding Dependencies, Converter={StaticResource PackageDependenciesToString}}" Foreground="White" Margin="5" Style="{StaticResource PageTextBlockStyle}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Row="3" Visibility="{Binding ReleaseNotes, Converter={StaticResource NullToVisibility}}">
+                                <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_ReleaseNotesLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
+                                <FlowDocumentScrollViewer 
                                   VerticalAlignment="Stretch"
                                   HorizontalAlignment="Stretch"
                                   Margin="5"
                                   Document="{Binding ReleaseNotes, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
+                            </StackPanel>
 
                         </Grid>
                     </DockPanel>
@@ -173,6 +185,7 @@
 
                     <!-- Packages List -->
                     <DataGrid x:Name="InstalledPackagesList"
+                              AutomationProperties.Name="Installed Packages"
                               Grid.Row="1" Grid.Column="0" Margin="5,0,0,0" 
                               ItemsSource="{Binding Packages}" 
                               SelectedItem="{Binding SelectedPackage}"
@@ -202,16 +215,16 @@
                             <TextBlock Style="{StaticResource SubtitleTextStyle}"> By: <Run Text="{Binding Authors}"></Run></TextBlock>
                         </StackPanel>
                         <StackPanel DockPanel.Dock="Left">
-                            <TextBlock Style="{StaticResource PackageResourceLabel}">Downloads:</TextBlock>
-                            <TextBlock Text="{Binding VersionDownloadCount}" Style="{StaticResource PackageResourceValue}"></TextBlock>
-                            <TextBlock Style="{StaticResource PackageResourceLabel}">Total Downloads:</TextBlock>
-                            <TextBlock Text="{Binding DownloadCount}" Style="{StaticResource PackageResourceValue}"></TextBlock>
-                            <TextBlock Style="{StaticResource PackageResourceLabel}">Created:</TextBlock>
-                            <TextBlock Text="{Binding Created}" Style="{StaticResource PackageResourceValue}"></TextBlock>
-                            <TextBlock Style="{StaticResource PackageResourceLabel}">Last Updated:</TextBlock>
-                            <TextBlock Text="{Binding LastUpdated}" Style="{StaticResource PackageResourceValue}"></TextBlock>
-                            <TextBlock Style="{StaticResource PackageResourceLabel}">Package Size (bytes):</TextBlock>
-                            <TextBlock Text="{Binding PackageSize, Converter={StaticResource LongSizeToFileSizeString}}" Style="{StaticResource PackageResourceValue}"></TextBlock>
+                            <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_DownloadsLabel}" Target="{Binding ElementName=VersionDownloadCount1}"/>
+                            <TextBlock x:Name="VersionDownloadCount1" Text="{Binding VersionDownloadCount}" Style="{StaticResource PackageResourceValue}"></TextBlock>
+                            <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_TotalDownloadsLabel}" Target="{Binding ElementName=DownloadCount1}"/>
+                            <TextBlock x:Name="DownloadCount1" Text="{Binding DownloadCount}" Style="{StaticResource PackageResourceValue}"></TextBlock>
+                            <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_CreatedLabel}" Target="{Binding ElementName=Created1}"/>
+                            <TextBlock x:Name="Created1" Text="{Binding Created}" Style="{StaticResource PackageResourceValue}"></TextBlock>
+                            <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_LastUpdatedLabel}" Target="{Binding ElementName=LastUpdated1}"/>
+                            <TextBlock x:Name="LastUpdated1" Text="{Binding LastUpdated}" Style="{StaticResource PackageResourceValue}"></TextBlock>
+                            <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_PackageSizeLabel}" Target="{Binding ElementName=PackageSize1}"/>
+                            <TextBlock x:Name="PackageSize1" Text="{Binding PackageSize, Converter={StaticResource LongSizeToFileSizeString}}" Style="{StaticResource PackageResourceValue}"></TextBlock>
 
                             <StackPanel Margin="5,5,0,40">
                                 <TextBlock Visibility="{Binding ProjectUrl, FallbackValue=Collapsed, Converter={StaticResource UriToVisibilty}}"><Hyperlink NavigateUri="{Binding ProjectUrl}" RequestNavigate="HandleLinkClick">Project Site</Hyperlink></TextBlock>

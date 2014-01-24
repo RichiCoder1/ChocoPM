@@ -151,6 +151,15 @@ namespace ChocoPM.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Dependencies:.
+        /// </summary>
+        public static string HomeView_PackageView_DependenciesLabel {
+            get {
+                return ResourceManager.GetString("HomeView_PackageView_DependenciesLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Description:.
         /// </summary>
         public static string HomeView_PackageView_DescriptionLabel {

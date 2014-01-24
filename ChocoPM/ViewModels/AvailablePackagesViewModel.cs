@@ -78,8 +78,8 @@ namespace ChocoPM.ViewModels
             set { SetPropertyValue(ref _pageSize, value); }
         }
 
-        private long _pageCount;
-        public long PageCount
+        private int _pageCount;
+        public int PageCount
         {
             get { return _pageCount; }
             set { SetPropertyValue(ref _pageCount, value); }
@@ -104,7 +104,7 @@ namespace ChocoPM.ViewModels
             _currentPage = 0;
             _pageSize = 50;
             _totalCount = _remoteService.Packages.Where(package => package.IsLatestVersion).LongCount();
-            _pageCount = _totalCount / _pageSize;
+            _pageCount = (int)(_totalCount / _pageSize);
             Packages = new ObservableCollection<PackageViewModel>();
 
             LoadPackages();
@@ -147,6 +147,9 @@ namespace ChocoPM.ViewModels
                     {
                         query = query.Where(package => package.Id.Contains(SearchQuery) || package.Title.Contains(SearchQuery) || package.Tags.Contains(SearchQuery));
                     }
+                    TotalCount = query.LongCount();
+                    PageCount = (int)(_totalCount / _pageSize);
+
                     if (!string.IsNullOrWhiteSpace(SortColumn))
                         query = !SortDescending ? query.OrderBy(this._sortColumn) : query.OrderByDescending(this._sortColumn);
 
@@ -167,16 +170,47 @@ namespace ChocoPM.ViewModels
             }
         }
 
+        public bool CanGoToFirst()
+        {
+            return CurrentPage != 0;
+        }
+
+        public void GoToFirst()
+        {
+            CurrentPage = 0;
+        }
+
+        public bool CanGoBack()
+        {
+            return CurrentPage > 0;
+        }
+
         public void GoBack()
         {
             if (CurrentPage > 0)
                 CurrentPage--;
         }
 
+        public bool CanGoForward()
+        {
+            return CurrentPage < PageCount;
+        }
+
+
         public void GoForward()
         {
-            if (CurrentPage < PageCount - 1)
+            if (CurrentPage < PageCount)
                 CurrentPage++;
+        }
+
+        public bool CanGoToLast()
+        {
+            return CurrentPage != PageCount;
+        }
+
+        public void GoToLast()
+        {
+            CurrentPage = PageCount;
         }
     }
 }
