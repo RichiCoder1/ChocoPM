@@ -1,13 +1,13 @@
-﻿using ChocoPM.ViewModels;
+﻿using System.Collections.ObjectModel;
+using ChocoPM.ViewModels;
 using ChocoPM.Models;
+using ChocoPM.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Management.Automation;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
-using ChocoPM.Controls;
 using System.Management.Automation.Runspaces;
 using System.Threading;
 
@@ -24,33 +24,35 @@ namespace ChocoPM.Services
             _remoteService = remoteService;
         }
 
+        private readonly PowerShell _ps = PowerShell.Create();
+
         public IEnumerable<V2FeedPackage> GetPackages()
         {
-            List<V2FeedPackage> packages = (List<V2FeedPackage>)Cache.Get(LocalCacheKeyName);
-            if (packages == null)
+            var packages = (List<V2FeedPackage>)Cache.Get(LocalCacheKeyName);
+            if (packages != null)
             {
-                using (var ps = PowerShell.Create())
-                {
-                    ps.AddCommand("chocolatey").AddArgument("list").AddArgument("-lo");
+                return packages;
+            }
 
-                    var packageNames = ps.Invoke<string>();
-                    var packageDescriptions =
-                        packageNames.Select(packageName => packageName.Split(' '))
+            var packageNames = AsyncHelpers.RunSynchronously(() => 
+                RunPackageCommand("chocolatey list -lo", refreshPackages: false, logOutput: false)).Select(obj => obj.ToString());
+
+            var packageDescriptions =
+                packageNames.Select(packageName => packageName.Split(' '))
                             .Where(packageArray => packageArray.Count() == 2)
                             .Select(packageArray => new { Id = packageArray[0], Version = packageArray[1] });
 
-                    packages = new List<V2FeedPackage>();
-                    foreach (var packageDesc in packageDescriptions)
-                    {
-                        var package = _remoteService.Packages.Where(pckge => packageDesc.Id == pckge.Id && packageDesc.Version == pckge.Version).SingleOrDefault();
-                        if (package == null)
-                            continue;
-                        packages.Add(package);
-                    }
-                }
-                Cache.Set(LocalCacheKeyName, packages, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromDays(1) });
-                NotifyPropertyChanged("Packages");
+            packages = new List<V2FeedPackage>();
+            foreach (var packageDesc in packageDescriptions)
+            {
+                // ReSharper disable once ReplaceWithSingleCallToSingleOrDefault
+                var package = this._remoteService.Packages.Where(pckge => packageDesc.Id == pckge.Id && packageDesc.Version == pckge.Version).SingleOrDefault();
+                if (package == null)
+                    continue;
+                packages.Add(package);
             }
+            this.Cache.Set(LocalCacheKeyName, packages, new CacheItemPolicy { SlidingExpiration = TimeSpan.FromDays(1) });
+            NotifyPropertyChanged("Packages");
             return packages;
         }
 
@@ -62,12 +64,12 @@ namespace ChocoPM.Services
 
         public async Task<bool> UninstallPackageAsync(string id, string version)
         {
-          return await RunPackageCommand("chocolatey uninstall " + id + " -version " + version);
+            return await ExecutePackageCommand("chocolatey uninstall " + id + " -version " + version);
         }
 
         public async Task<bool> InstallPackageAsync(string id, string version = null)
         {
-            return await RunPackageCommand("chocolatey install " + id + " -version " + version);
+            return await ExecutePackageCommand("chocolatey install " + id + " -version " + version);
         }
 
         public bool IsInstalled(string id, string version)
@@ -77,10 +79,15 @@ namespace ChocoPM.Services
 
         public async Task<bool> UpdatePackageAsync(string id)
         {
-            return await RunPackageCommand("chocolatey update " + id);
+            return await ExecutePackageCommand("chocolatey update " + id);
         }
 
-        public async Task<bool> RunPackageCommand(string commandString, bool refreshPackages = true)
+        public async Task<bool> ExecutePackageCommand(string commandString, bool refreshPackages = true)
+        {
+            return await RunPackageCommand(commandString, refreshPackages) != null;
+        }
+
+        public async Task<Collection<PSObject>> RunPackageCommand(string commandString, bool refreshPackages = true, bool logOutput = true)
         {
             isProcessing = true;
             _mainWindowVm.OutputBuffer.Clear(); ;
@@ -90,31 +97,43 @@ namespace ChocoPM.Services
                 {
                     rs.Open();
                     var ps = rs.CreatePipeline(commandString);
-                    ps.Output.DataReady += (obj, args) =>
+                    if (logOutput)
                     {
-                        var outputs = ps.Output.NonBlockingRead();
-                        foreach (PSObject output in outputs)
+                        ps.Output.DataReady += (obj, args) =>
                         {
-                            _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine { Text = output.ToString(), Type = PowerShellLineType.Output });
-                        }
-                    };
-                    ps.Error.DataReady += (obj, args) =>
-                    {
-                        var outputs = ps.Error.NonBlockingRead();
-                        foreach (PSObject output in outputs)
+                            var outputs = ps.Output.NonBlockingRead();
+                            foreach (PSObject output in outputs)
+                            {
+                                _mainWindowVm.OutputBuffer.Add(
+                                    new PowerShellOutputLine {
+                                        Text = output.ToString(),
+                                        Type = PowerShellLineType.Output
+                                    });
+                            }
+                        };
+                        ps.Error.DataReady += (obj, args) =>
                         {
-                            _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine { Text = output.ToString(), Type = PowerShellLineType.Error });
-                        }
-                    };
+                            var outputs = ps.Error.NonBlockingRead();
+                            foreach (PSObject output in outputs)
+                            {
+                                _mainWindowVm.OutputBuffer.Add(
+                                    new PowerShellOutputLine {
+                                        Text = output.ToString(),
+                                        Type = PowerShellLineType.Error
+                                    });
+                            }
+                        };
+                    }
 
+                    Collection<PSObject> results = null;
                     try
                     {
-                        ps.Invoke();
+                        results = ps.Invoke();
                     }
                     catch (Exception e)
                     {
                         _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine { Text = e.ToString(), Type = PowerShellLineType.Error });
-                        return false;
+                        return results;
                     }
 
                     _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine { Text = "Executed successfully...", Type = PowerShellLineType.Output });
@@ -122,7 +141,7 @@ namespace ChocoPM.Services
                     if(refreshPackages)
                         RefreshPackages();
 
-                    return true;
+                    return results;
                 }
             });
             Thread.Sleep(200);

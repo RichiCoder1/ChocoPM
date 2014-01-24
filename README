@@ -9,5 +9,6 @@ This is a *Work In Progress*. This project will be evolving rapidly for as long 
 1. Visual Studio 2012 w/ NuGet
 2. .Net Framework 4.5
 3. Wix Toolset 3.8.X (Required for installer)
+4. Chocolatey v0.9.8.21+
 
 Simply open ChocoPM.sln, and hit build.

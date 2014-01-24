@@ -209,7 +209,7 @@
                             </StackPanel>
                             <TextBlock Style="{StaticResource SubtitleTextStyle}" AutomationProperties.Name="{Binding Authors}"><Run Text="{x:Static res:Strings.HomeView_PackageView_ByLabel}"/> <Run Text="{Binding Authors}" /></TextBlock>
                         </StackPanel>
-                        </StackPanel>
+                        
                         <StackPanel DockPanel.Dock="Left">
                             <Label Style="{StaticResource PackageResourceLabel}" Content="{x:Static res:Strings.HomeView_PackageView_DownloadsLabel}" Target="{Binding ElementName=VersionDownloadCount1}"/>
                             <TextBlock x:Name="VersionDownloadCount1" Text="{Binding VersionDownloadCount}" Style="{StaticResource PackageResourceValue}"></TextBlock>
