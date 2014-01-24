@@ -7,6 +7,9 @@ using System.Linq;
 using System.Management.Automation;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
+using ChocoPM.Controls;
+using System.Management.Automation.Runspaces;
+using System.Threading;
 
 namespace ChocoPM.Services
 {
@@ -14,12 +17,6 @@ namespace ChocoPM.Services
     {
         private readonly MemoryCache Cache = MemoryCache.Default;
         private const string LocalCacheKeyName = "LocalChocolateyService.Packages";
-        internal static IMainWindowViewModel _mainWindowVm;
-        private bool isProcessing
-        {
-            get { return _mainWindowVm != null && _mainWindowVm.IsProcessing; }
-            set { if (_mainWindowVm != null) _mainWindowVm.IsProcessing = value; }
-        }
 
         private readonly IRemoteChocolateyService _remoteService;
         public LocalChocolateyService(IRemoteChocolateyService remoteService)
@@ -63,58 +60,12 @@ namespace ChocoPM.Services
 
         public async Task<bool> UninstallPackageAsync(string id, string version)
         {
-            isProcessing = true;
-            var result = await Task.Run(() =>
-            {
-                using (var ps = PowerShell.Create())
-                {
-                    ps.AddCommand("chocolatey").AddArgument("uninstall").AddArgument(id).AddArgument("-version " + version);
-
-                    try
-                    {
-                        var packageNames = ps.Invoke();
-                    }
-                    catch (Exception)
-                    {
-#if DEBUG
-                        throw;
-#endif
-                        return false;
-                    }
-                    RefreshPackages();
-                    return true;
-                }
-            });
-            isProcessing = false;
-            return result;
+          return await RunPackageCommand("chocolatey uninstall " + id + " -version " + version);
         }
 
         public async Task<bool> InstallPackageAsync(string id, string version = null)
         {
-            isProcessing = true;
-            var result = await Task.Run(() =>
-            {
-                using (var ps = PowerShell.Create())
-                {
-                    ps.AddCommand("chocolatey").AddArgument("install").AddArgument(id).AddArgument("-version " + version);
-
-                    try
-                    {
-                        var packageNames = ps.Invoke();
-                    }
-                    catch (Exception)
-                    {
-    #if DEBUG
-                        throw;
-    #endif
-                        return false;
-                    }
-                    RefreshPackages();
-                    return true;
-                }
-            });
-            isProcessing = false;
-            return result;
+            return await RunPackageCommand("chocolatey install " + id + " -version " + version);
         }
 
         public bool IsInstalled(string id, string version)
@@ -124,30 +75,64 @@ namespace ChocoPM.Services
 
         public async Task<bool> UpdatePackageAsync(string id)
         {
+            return await RunPackageCommand("chocolatey update " + id);
+        }
+
+        public async Task<bool> RunPackageCommand(string commandString, bool refreshPackages = true)
+        {
             isProcessing = true;
+            _mainWindowVm.OutputBuffer.Clear(); ;
             var result = await Task.Run(() =>
             {
-                using (var ps = PowerShell.Create())
+                using (var rs = RunspaceFactory.CreateRunspace())
                 {
-                    ps.AddCommand("chocolatey").AddArgument("update").AddArgument(id);
+                    rs.Open();
+                    var ps = rs.CreatePipeline(commandString);
+                    ps.Output.DataReady += (obj, args) =>
+                    {
+                        var outputs = ps.Output.NonBlockingRead();
+                        foreach (PSObject output in outputs)
+                        {
+                            _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine { Text = output.ToString(), Type = PowerShellLineType.Output });
+                        }
+                    };
+                    ps.Error.DataReady += (obj, args) =>
+                    {
+                        var outputs = ps.Error.NonBlockingRead();
+                        foreach (PSObject output in outputs)
+                        {
+                            _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine { Text = output.ToString(), Type = PowerShellLineType.Error });
+                        }
+                    };
 
                     try
                     {
-                        var packageNames = ps.Invoke();
+                        ps.Invoke();
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-    #if DEBUG
-                        throw;
-    #endif
+                        _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine { Text = e.ToString(), Type = PowerShellLineType.Error });
                         return false;
                     }
-                    RefreshPackages();
+
+                    _mainWindowVm.OutputBuffer.Add(new PowerShellOutputLine { Text = "Executed successfully...", Type = PowerShellLineType.Output });
+
+                    if(refreshPackages)
+                        RefreshPackages();
+
                     return true;
                 }
             });
+            Thread.Sleep(200);
             isProcessing = false;
             return result;
+        }
+
+        internal static IMainWindowViewModel _mainWindowVm;
+        private bool isProcessing
+        {
+            get { return _mainWindowVm != null && _mainWindowVm.IsProcessing; }
+            set { if (_mainWindowVm != null) _mainWindowVm.IsProcessing = value; }
         }
     }
 }

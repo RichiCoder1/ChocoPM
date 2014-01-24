@@ -117,4 +117,79 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="HomeView_AvailablePackages_Header" xml:space="preserve">
+    <value>Available Packages</value>
+  </data>
+  <data name="HomeView_InstalledPackages_Header" xml:space="preserve">
+    <value>Installed Packages</value>
+  </data>
+  <data name="HomeView_PackagesGrid_PageLabel" xml:space="preserve">
+    <value>Page</value>
+  </data>
+  <data name="HomeView_PackagesGrid_PageOfLabel" xml:space="preserve">
+    <value>Of</value>
+  </data>
+  <data name="HomeView_PackagesGrid_SearchLabel" xml:space="preserve">
+    <value>Search:</value>
+  </data>
+  <data name="HomeView_PackagesGrid_TitleColumnHeader" xml:space="preserve">
+    <value>Title</value>
+  </data>
+  <data name="HomeView_PackagesGrid_TotalDownloadsColumnHeader" xml:space="preserve">
+    <value>Total Downloads</value>
+  </data>
+  <data name="HomeView_PackagesGrid_VersionColumnHeader" xml:space="preserve">
+    <value>Version</value>
+  </data>
+  <data name="HomeView_PackageView_ByLabel" xml:space="preserve">
+    <value>By:</value>
+  </data>
+  <data name="HomeView_PackageView_CreatedLabel" xml:space="preserve">
+    <value>Created:</value>
+  </data>
+  <data name="HomeView_PackageView_DescriptionLabel" xml:space="preserve">
+    <value>Description:</value>
+  </data>
+  <data name="HomeView_PackageView_DownloadsLabel" xml:space="preserve">
+    <value>Downloads:</value>
+  </data>
+  <data name="HomeView_PackageView_GalleryUrlLabel" xml:space="preserve">
+    <value>Gallery</value>
+  </data>
+  <data name="HomeView_PackageView_LastUpdatedLabel" xml:space="preserve">
+    <value>Last Updated:</value>
+  </data>
+  <data name="HomeView_PackageView_LicenseUrlLabel" xml:space="preserve">
+    <value>License</value>
+  </data>
+  <data name="HomeView_PackageView_PackageSizeLabel" xml:space="preserve">
+    <value>Package Size (bytes):</value>
+  </data>
+  <data name="HomeView_PackageView_ProjectUrlLabel" xml:space="preserve">
+    <value>Project Site</value>
+  </data>
+  <data name="HomeView_PackageView_ReleaseNotesLabel" xml:space="preserve">
+    <value>Release Notes:</value>
+  </data>
+  <data name="HomeView_PackageView_ReportAbuseUrlLabel" xml:space="preserve">
+    <value>Report Abuse</value>
+  </data>
+  <data name="HomeView_PackageView_TotalDownloadsLabel" xml:space="preserve">
+    <value>Total Downloads:</value>
+  </data>
+  <data name="HomeView_Title" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="InstallButton_Tooltip" xml:space="preserve">
+    <value>Install</value>
+  </data>
+  <data name="MainWindow_Title" xml:space="preserve">
+    <value>Choco Package Manager</value>
+  </data>
+  <data name="UninstallButton_Tooltip" xml:space="preserve">
+    <value>Uninstall</value>
+  </data>
+  <data name="UpdateButton_Tooltip" xml:space="preserve">
+    <value>Update</value>
+  </data>
 </root>

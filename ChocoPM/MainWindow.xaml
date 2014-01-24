@@ -1,14 +1,16 @@
 ﻿<controls:MetroWindow x:Class="ChocoPM.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:cvrts="clr-namespace:ChocoPM.Converters"
-        xmlns:vm="clr-namespace:ChocoPM.ViewModels"  
-        mc:Ignorable="d" 
-        d:DesignHeight="768" d:DesignWidth="1366"
-        d:DataContext="{d:DesignInstance vm:MainWindowViewModel}" Title="Choco Package Manager">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:res="clr-namespace:ChocoPM.Properties"
+    xmlns:ctrls="clr-namespace:ChocoPM.Controls"
+    xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+    xmlns:cvrts="clr-namespace:ChocoPM.Converters"
+    xmlns:vm="clr-namespace:ChocoPM.ViewModels"  
+    mc:Ignorable="d" 
+    d:DesignHeight="768" d:DesignWidth="1366"
+    d:DataContext="{d:DesignInstance vm:MainWindowViewModel}" Title="{x:Static res:Strings.MainWindow_Title}">
 
     <Window.Resources>
         <cvrts:BooleanToVisibility x:Key="BooleanToVisibility"/>
@@ -21,7 +23,8 @@
                             VerticalAlignment="Stretch"
                             Background="#FF252525"
                             Opacity=".7" />
-            <controls:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" IsActive="{Binding IsProcessing}"></controls:ProgressRing>
+            <!--<controls:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" IsActive="{Binding IsProcessing}"></controls:ProgressRing>-->
+            <ctrls:PowershellOutputBox Buffer="{Binding OutputBuffer}" MinWidth="300" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20"/>
         </Grid>
     </Grid>
 </controls:MetroWindow>
