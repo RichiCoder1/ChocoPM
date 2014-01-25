@@ -74,6 +74,15 @@ namespace ChocoPM.Models
                 return 1;
             if (Revision < other.Revision)
                 return -1;
+
+            // This is "reversed" because if we don't have an addendum, that means we're not prerelease.
+            // Or at least that's how I understand it.
+            if (Addendum == null && other.Addendum != null)
+                return 1;
+
+            if (Addendum != null && other.Addendum == null)
+                return -1;
+
             return StringComparer.InvariantCulture.Compare(Addendum, other.Addendum);
         }
 
