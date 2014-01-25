@@ -4,9 +4,14 @@
 	<Product Id="*" Name="ChocoPM" Language="1033" Version="0.1.0.20140124" Manufacturer="Rash Apps" UpgradeCode="34f1c107-b1aa-447a-95bb-ebcffaa2e9c2">
 		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
     <Binary Id="ChocolateyAction" SourceFile="$(var.ChocolateyAction.TargetPath)"/>
-
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <Media Id="1" Cabinet="ChocoPM.cab" EmbedCab="yes" CompressionLevel="high"/>
+
+    <Property Id='ARPCOMMENTS'>GUI for Chocolatey Package Manager</Property>
+    <Property Id='ARPHELPLINK'>https://github.com/RichiCoder1/ChocoPM/issues</Property>
+    <Property Id='ARPURLINFOABOUT'>https://github.com/RichiCoder1/ChocoPM</Property>
+    <Property Id='ARPURLUPDATEINFO'>https://github.com/RichiCoder1/ChocoPM/releases</Property>
+    <Property Id='ARPPRODUCTICON'>ProgramIcon.exe</Property>
 
     <Icon Id="ProgramIcon.exe" SourceFile="..\Resources\Logo\Icon.ico"/>
 
