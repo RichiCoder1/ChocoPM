@@ -12,7 +12,7 @@ namespace ChocoPM.ViewModels
     {
         static PackageViewModel()
         {
-            Mapper.CreateMap<Services.V2FeedPackage, PackageViewModel>();
+            Mapper.CreateMap<V2FeedPackage, PackageViewModel>();
         }
 
         private readonly ILocalChocolateyService _localService;
@@ -107,7 +107,7 @@ namespace ChocoPM.ViewModels
 
         public bool IsInstalled
         {
-            get { return _localService.IsInstalled(_id, _version); }
+            get { return _localService.IsInstalled(_id, _version.VersionString); }
         }
 
         private bool _isLatestVersion;
@@ -222,19 +222,19 @@ namespace ChocoPM.ViewModels
             set { SetPropertyValue(ref _title, value); }
         }
 
-        private string _version;
-        public string Version
+        private Models.Version _version;
+        public Models.Version Version
         {
             get { return _version; }
             set { SetPropertyValue(ref _version, value); }
         }
 
-        public string LatestVersion
+        public Models.Version LatestVersion
         {
             get
             {
                 var latest = _remoteService.GetLatest(Id);
-                return latest != null ? latest.Version : Version; 
+                return latest != null ? new Models.Version(latest.Version) : Version; 
             }
         }
 
@@ -250,12 +250,12 @@ namespace ChocoPM.ViewModels
         #region Package Methods
         public async void Install()
         {
-            await _localService.InstallPackageAsync(Id, Version);
+            await _localService.InstallPackageAsync(Id, Version.VersionString);
         }
 
         public async void Remove()
         {
-            await _localService.UninstallPackageAsync(Id, Version);
+            await _localService.UninstallPackageAsync(Id, Version.VersionString);
         }
 
         public async void Update()
@@ -266,7 +266,7 @@ namespace ChocoPM.ViewModels
 
         public override string ToString()
         {
-            return Title + (string.IsNullOrWhiteSpace(Version) ? "" : " Version " + Version);
+            return Title + " Version " + Version.VersionString;
         }
     }
 }

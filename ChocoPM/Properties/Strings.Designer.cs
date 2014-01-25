@@ -61,11 +61,38 @@ namespace ChocoPM.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Include All Versions.
+        /// </summary>
+        public static string HomeView_AvailablePackages_AllVersionCheckBox {
+            get {
+                return ResourceManager.GetString("HomeView_AvailablePackages_AllVersionCheckBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Available Packages.
         /// </summary>
         public static string HomeView_AvailablePackages_Header {
             get {
                 return ResourceManager.GetString("HomeView_AvailablePackages_Header", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Match Word.
+        /// </summary>
+        public static string HomeView_AvailablePackages_MatchCheckBox {
+            get {
+                return ResourceManager.GetString("HomeView_AvailablePackages_MatchCheckBox", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Include Prerelease.
+        /// </summary>
+        public static string HomeView_AvailablePackages_PrereleaseCheckBox {
+            get {
+                return ResourceManager.GetString("HomeView_AvailablePackages_PrereleaseCheckBox", resourceCulture);
             }
         }
         

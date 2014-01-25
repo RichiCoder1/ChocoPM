@@ -147,9 +147,11 @@
     <Compile Include="Extensions\DataGridExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Converters\NullToVisibility.cs" />
+    <Compile Include="Helpers\VersionSort.cs" />
     <Compile Include="IoC\MainModule.cs" />
     <Compile Include="Models\ObservableBase.cs" />
     <Compile Include="Models\PowerShellOutputLine.cs" />
+    <Compile Include="Models\Version.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Service References\Services\Reference.cs">
       <AutoGen>True</AutoGen>

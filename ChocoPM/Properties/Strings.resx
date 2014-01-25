@@ -195,4 +195,13 @@
   <data name="HomeView_PackageView_DependenciesLabel" xml:space="preserve">
     <value>Dependencies:</value>
   </data>
+  <data name="HomeView_AvailablePackages_AllVersionCheckBox" xml:space="preserve">
+    <value>Include All Versions</value>
+  </data>
+  <data name="HomeView_AvailablePackages_MatchCheckBox" xml:space="preserve">
+    <value>Match Word</value>
+  </data>
+  <data name="HomeView_AvailablePackages_PrereleaseCheckBox" xml:space="preserve">
+    <value>Include Prerelease</value>
+  </data>
 </root>

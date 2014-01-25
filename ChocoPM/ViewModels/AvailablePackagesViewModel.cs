@@ -36,13 +36,6 @@ namespace ChocoPM.ViewModels
             set { SetPropertyValue(ref _selectedPackage, value); }
         }
 
-        private bool _showPrerelease;
-        public bool ShowPrerelease
-        {
-            get { return _showPrerelease; }
-            set { SetPropertyValue(ref _showPrerelease, value); }
-        }
-
         private string _sortColumn;
         public string SortColumn
         {
@@ -85,6 +78,28 @@ namespace ChocoPM.ViewModels
             set { SetPropertyValue(ref _pageCount, value); }
         }
 
+        private bool _allVersions;
+        public bool AllVersions
+        {
+            get { return _allVersions; }
+            set { SetPropertyValue(ref _allVersions, value); }
+        }
+
+        private bool _prerelease;
+        public bool Prerelease
+        {
+            get { return _prerelease; }
+            set { SetPropertyValue(ref _prerelease, value); }
+        }
+
+
+        private bool _match;
+        public bool Match
+        {
+            get { return _match; }
+            set { SetPropertyValue(ref _match, value); }
+        }
+
         private bool _loading;
         public bool Loading
         {
@@ -95,7 +110,7 @@ namespace ChocoPM.ViewModels
         private IRemoteChocolateyService _remoteService { get { return _parent.RemoteService; } }
         private ILocalChocolateyService _localService { get { return _parent.LocalService; } }
 
-        private IHomeViewModel _parent;
+        private readonly IHomeViewModel _parent;
         public AvailablePackagesViewModel(IHomeViewModel parent)
         {
             _parent = parent;
@@ -109,6 +124,10 @@ namespace ChocoPM.ViewModels
 
             LoadPackages();
 
+            var immediateProperties = new [] {
+                "SortColumn", "SortDescending", "AllVersions", "Prerelease", "Match"
+            };
+
             Observable.FromEventPattern<PropertyChangedEventArgs>(this, "PropertyChanged")
                 .Where(e => e.EventArgs.PropertyName == "SearchQuery")
                 .Throttle(TimeSpan.FromMilliseconds(500))
@@ -117,7 +136,7 @@ namespace ChocoPM.ViewModels
                 .Subscribe(e => LoadPackages());
 
             Observable.FromEventPattern<PropertyChangedEventArgs>(this, "PropertyChanged")
-                .Where(e => e.EventArgs.PropertyName == "SortColumn" || e.EventArgs.PropertyName == "SortDescending")
+                .Where(e => immediateProperties.Contains(e.EventArgs.PropertyName))
                 .ObserveOnDispatcher()
                 .Subscribe(e => LoadPackages());
 
@@ -139,13 +158,16 @@ namespace ChocoPM.ViewModels
             {
                 var newPackages = await Task.Run(() =>
                 {
-                    IQueryable<V2FeedPackage> query = _remoteService.Packages.Where(package => package.IsLatestVersion);
-                    if (!ShowPrerelease)
-                        query = query.Where(package => package.IsPrerelease == false);
+                    IQueryable<V2FeedPackage> query = _remoteService.Packages.Where(package => package.IsPrerelease == Prerelease || package.IsPrerelease == false);
+
+                    if (!AllVersions)
+                        query = query.Where(package => package.IsLatestVersion || package.IsAbsoluteLatestVersion);
 
                     if (!string.IsNullOrWhiteSpace(SearchQuery))
                     {
-                        query = query.Where(package => package.Id.Contains(SearchQuery) || package.Title.Contains(SearchQuery) || package.Tags.Contains(SearchQuery));
+                        query = Match ? 
+                            query.Where(package => package.Id == SearchQuery || package.Title == SearchQuery) : 
+                            query.Where(package => package.Id.Contains(SearchQuery) || package.Title.Contains(SearchQuery));
                     }
                     TotalCount = query.LongCount();
                     PageCount = (int)(_totalCount / _pageSize);

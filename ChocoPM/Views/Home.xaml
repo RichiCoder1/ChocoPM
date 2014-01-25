@@ -38,6 +38,11 @@
                     <StackPanel>
                         <Label Content="{x:Static res:Strings.HomeView_PackagesGrid_SearchLabel}" Target="{Binding ElementName=SearchBox}"></Label>
                         <TextBox x:Name="SearchBox" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Search Box" Margin="5,5,25,5"></TextBox>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Name="AllVersionsCheckBox" IsChecked="{Binding AllVersions}" Margin="3" Content="{x:Static res:Strings.HomeView_AvailablePackages_AllVersionCheckBox}"/>
+                            <CheckBox Name="PrereleaseCheckBox" IsChecked="{Binding Prerelease}" Margin="3" Content="{x:Static res:Strings.HomeView_AvailablePackages_PrereleaseCheckBox}"/>
+                            <CheckBox Name="MatchCheckBox" IsChecked="{Binding Match}" Margin="3" Content="{x:Static res:Strings.HomeView_AvailablePackages_MatchCheckBox}"/>
+                        </StackPanel>
                     </StackPanel>
           
                     <!-- Packages List -->
