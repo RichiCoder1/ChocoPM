@@ -24,11 +24,17 @@ namespace ChocoPM.ViewModels
             set { SetPropertyValue(ref _searchQuery, value); }
         }
 
+        private bool _match;
+        public bool Match
+        {
+            get { return _match; }
+            set { SetPropertyValue(ref _match, value); }
+        }
+
         private ObservableCollection<PackageViewModel> _packages;
         public ObservableCollection<PackageViewModel> Packages
         {
             get { return _packages; }
-            set { SetPropertyValue(ref _packages, value); }
         }
 
         private PackageViewModel _selectedPackage;
@@ -36,6 +42,26 @@ namespace ChocoPM.ViewModels
         {
             get { return _selectedPackage; }
             set { SetPropertyValue(ref _selectedPackage, value); }
+        }
+
+        private bool _isVisible;
+        public bool IsVisible
+        {
+            get { return _isVisible; }
+            set 
+            { 
+                SetPropertyValue(ref _isVisible, value); 
+                // Enables lazy loading if the LoadPackages(true) in the Initializer is commented out.
+                // Warning: Here be dragons. Causes all kinds of funny business with PackageViewModel's IsInstalled
+                /*if(value && !_isLoaded) LoadPackages(true);*/ 
+            }
+        }
+
+        private bool _isLoaded;
+        public bool IsLoaded
+        {
+            get { return _isLoaded; }
+            set { SetPropertyValue(ref _isLoaded, value); }
         }
 
         private bool _loading;
@@ -51,9 +77,14 @@ namespace ChocoPM.ViewModels
         public InstalledPackagesViewModel(IHomeViewModel parent)
         {
             _parent = parent;
-            Packages = new ObservableCollection<PackageViewModel>();
+            _packages = new ObservableCollection<PackageViewModel>();
 
             LoadPackages(true);
+
+            Observable.FromEventPattern<PropertyChangedEventArgs>(this, "PropertyChanged")
+                .Where(e => e.EventArgs.PropertyName == "Match")
+                .ObserveOnDispatcher()
+                .Subscribe(e => LoadPackages());
 
             Observable.FromEventPattern<PropertyChangedEventArgs>(this, "PropertyChanged")
                 .Where(e => e.EventArgs.PropertyName == "SearchQuery")
@@ -79,7 +110,10 @@ namespace ChocoPM.ViewModels
                 IQueryable<V2FeedPackage> packages = (await _localService.GetPackages(logOutput)).AsQueryable();
                 if (!string.IsNullOrWhiteSpace(SearchQuery))
                 {
-                    packages = packages.Where(package => CultureInfo.CurrentCulture.CompareInfo.IndexOf((package.Title ?? package.Id), SearchQuery, CompareOptions.OrdinalIgnoreCase) >= 0);
+                    if(Match)
+                        packages = packages.Where(package => string.Compare((package.Title ?? package.Id), SearchQuery, true) == 0);
+                    else
+                        packages = packages.Where(package => CultureInfo.CurrentCulture.CompareInfo.IndexOf((package.Title ?? package.Id), SearchQuery, CompareOptions.OrdinalIgnoreCase) >= 0);
                 }
 
                 var packagesList = packages.Select(package => 
@@ -92,6 +126,7 @@ namespace ChocoPM.ViewModels
             {
                 Loading = false;
             }
+            IsLoaded = true;
         }
     }
 }

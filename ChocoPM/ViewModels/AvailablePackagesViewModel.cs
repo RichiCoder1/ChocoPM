@@ -92,7 +92,6 @@ namespace ChocoPM.ViewModels
             set { SetPropertyValue(ref _prerelease, value); }
         }
 
-
         private bool _match;
         public bool Match
         {

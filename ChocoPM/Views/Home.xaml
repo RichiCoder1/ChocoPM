@@ -23,7 +23,8 @@
     </Page.Resources>
     <Grid x:Name="PackagesGrid">
         <TabControl x:Name="PackagesTab" AutomationProperties.Name="Package Tabs">
-            <TabItem Header="{x:Static res:Strings.HomeView_AvailablePackages_Header}" DataContext="{Binding AvailablePackagesViewModel}" d:DataContext="{d:DesignInstance vm:AvailablePackagesViewModel}" AutomationProperties.Name="{x:Static res:Strings.HomeView_AvailablePackages_Header}">
+            <TabItem Header="{x:Static res:Strings.HomeView_AvailablePackages_Header}" AutomationProperties.Name="{x:Static res:Strings.HomeView_AvailablePackages_Header}"
+                     DataContext="{Binding AvailablePackagesViewModel}" d:DataContext="{d:DesignInstance vm:AvailablePackagesViewModel}" IsSelected="True">
                 <Grid VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -137,6 +138,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="2*"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_DescriptionLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
@@ -151,21 +153,20 @@
                                 <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_DependenciesLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
                                 <TextBlock Text="{Binding Dependencies, Converter={StaticResource PackageDependenciesToString}}" Foreground="White" Margin="5" Style="{StaticResource PageTextBlockStyle}" AutomationProperties.Name="Package Dependencies"/>
                             </StackPanel>
-                            <StackPanel Grid.Row="3" Visibility="{Binding ReleaseNotes, Converter={StaticResource NullToVisibility}}">
-                                <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_ReleaseNotesLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
-                                <FlowDocumentScrollViewer 
-                                    Name="AvailablePackageReleaseNotes" AutomationProperties.Name="Package Release Notes"
-                                  VerticalAlignment="Stretch"
-                                  HorizontalAlignment="Stretch"
-                                  Margin="5"
-                                  Document="{Binding ReleaseNotes, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
-                            </StackPanel>
+                            <TextBlock Grid.Row="3" Text="{x:Static res:Strings.HomeView_PackageView_ReleaseNotesLabel}" Style="{StaticResource SectionHeaderTextStyle}" Visibility="{Binding ReleaseNotes, Converter={StaticResource NullToVisibility}}"/>
+                            <FlowDocumentScrollViewer Grid.Row="4"
+                                Name="AvailablePackageReleaseNotes" AutomationProperties.Name="Package Release Notes"
+                                VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                Margin="5" Visibility="{Binding ReleaseNotes, Converter={StaticResource NullToVisibility}}"
+                                Document="{Binding ReleaseNotes, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
 
                         </Grid>
                     </DockPanel>
                 </Grid>
             </TabItem>
-            <TabItem Header="{x:Static res:Strings.HomeView_InstalledPackages_Header}" DataContext="{Binding InstalledPackagesViewModel}" d:DataContext="{d:DesignInstance vm:InstalledPackagesViewModel}" AutomationProperties.Name="{x:Static res:Strings.HomeView_InstalledPackages_Header}">
+            <TabItem Header="{x:Static res:Strings.HomeView_InstalledPackages_Header}" AutomationProperties.Name="{x:Static res:Strings.HomeView_InstalledPackages_Header}"
+                     DataContext="{Binding InstalledPackagesViewModel}" d:DataContext="{d:DesignInstance vm:InstalledPackagesViewModel}"
+                     IsSelected="{Binding IsVisible}">
                 <Grid VerticalAlignment="Stretch">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -178,6 +179,9 @@
                     <StackPanel>
                         <Label>Search:</Label>
                         <TextBox x:Name="InstalledPackagesSearchBox" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Search Box" Margin="5,5,25,5"></TextBox>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Name="InstalledMatchCheckBox" IsChecked="{Binding Match}" Margin="3" Content="{x:Static res:Strings.HomeView_AvailablePackages_MatchCheckBox}"/>
+                        </StackPanel>
                     </StackPanel>
 
                     <!-- Packages List -->
@@ -248,6 +252,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="2*"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_DescriptionLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
@@ -262,15 +267,12 @@
                                 <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_DependenciesLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
                                 <TextBlock Text="{Binding Dependencies, Converter={StaticResource PackageDependenciesToString}}" Foreground="White" Margin="5" Style="{StaticResource PageTextBlockStyle}" AutomationProperties.Name="Package Dependencies"/>
                             </StackPanel>
-                            <StackPanel Grid.Row="3" Visibility="{Binding ReleaseNotes, Converter={StaticResource NullToVisibility}}">
-                                <TextBlock Text="{x:Static res:Strings.HomeView_PackageView_ReleaseNotesLabel}" Style="{StaticResource SectionHeaderTextStyle}"/>
-                                <FlowDocumentScrollViewer 
-                                    Name="InstalledPackageReleaseNotes" AutomationProperties.Name="Package Release Notes"
-                                  VerticalAlignment="Stretch"
-                                  HorizontalAlignment="Stretch"
-                                  Margin="5"
-                                  Document="{Binding ReleaseNotes, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
-                            </StackPanel>
+                            <TextBlock Grid.Row="3" Text="{x:Static res:Strings.HomeView_PackageView_ReleaseNotesLabel}" Style="{StaticResource SectionHeaderTextStyle}" Visibility="{Binding ReleaseNotes, Converter={StaticResource NullToVisibility}}"/>
+                            <FlowDocumentScrollViewer Grid.Row="4"
+                                Name="InstalledPackageReleaseNotes" AutomationProperties.Name="Package Release Notes"
+                                VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                Margin="5" Visibility="{Binding ReleaseNotes, Converter={StaticResource NullToVisibility}}"
+                                Document="{Binding ReleaseNotes, Converter={StaticResource TextToFlowDocumentConverter}}" Foreground="White"/>
 
                         </Grid>
                     </DockPanel>
