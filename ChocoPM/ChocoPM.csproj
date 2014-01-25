@@ -147,7 +147,6 @@
     <Compile Include="Extensions\DataGridExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Converters\NullToVisibility.cs" />
-    <Compile Include="Helpers\VersionSort.cs" />
     <Compile Include="IoC\MainModule.cs" />
     <Compile Include="Models\ObservableBase.cs" />
     <Compile Include="Models\PowerShellOutputLine.cs" />

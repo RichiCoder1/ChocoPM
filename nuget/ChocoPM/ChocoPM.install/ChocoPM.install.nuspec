@@ -3,7 +3,7 @@
   <metadata>
     <id>ChocoPM.install</id>
     <title>ChocoPM (Install)</title>
-    <version>0.1.0.12</version>
+    <version>0.1.0.20140124</version>
     <authors>Richard Simpson</authors>
     <owners>Richard Simpson</owners>
     <summary>ChocoPM</summary>
@@ -14,9 +14,9 @@
     <licenseUrl>https://github.com/RichiCoder1/ChocoPM/blob/master/LICENSE.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <iconUrl>https://raw.github.com/RichiCoder1/ChocoPM/master/Resources/Logo/Icon.png</iconUrl>
-    <!--<dependencies>
-      <dependency id="chocolatey" version="0.9.8.23" />
-    </dependencies>-->
+    <dependencies>
+      <dependency id="chocolatey" version="0.9.8.21" />
+    </dependencies>
     <releaseNotes>Initial Release</releaseNotes>
   </metadata>
   <files>
