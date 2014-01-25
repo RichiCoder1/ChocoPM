@@ -12,3 +12,5 @@ This is a *Work In Progress*. This project will be evolving rapidly for as long 
 4. Chocolatey v0.9.8.21+
 
 Simply open ChocoPM.sln, and hit build.
+
+Want to get a hold of me? Hit me up at @RichardSimp.
