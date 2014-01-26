@@ -5,4 +5,4 @@ $msiPath = Join-Path $installDir 'ChocoPM.msi'
 $silentArgs = '/quiet'
 $validExitCodes = @(0) 
 
-Install-ChocolateyPackage "$packageName" "$installerType" "$silentArgs" "$msiPath" -validExitCodes $validExitCodes
+Install-ChocolateyInstallPackage "$packageName" "$installerType" "$silentArgs" "$msiPath" -validExitCodes $validExitCodes

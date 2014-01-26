@@ -3,11 +3,11 @@
   <metadata>
     <id>ChocoPM.install</id>
     <title>ChocoPM (Install)</title>
-    <version>0.1.0.20140124</version>
+    <version>0.1.1.20140126</version>
     <authors>Richard Simpson</authors>
     <owners>Richard Simpson</owners>
     <summary>ChocoPM</summary>
-    <description>ChocoPM</description>
+    <description>Chocolatey Package Manager GUI</description>
     <projectUrl>https://github.com/RichiCoder1/ChocoPM</projectUrl>
     <tags>ChocoPM chocolatey GUI</tags>
     <copyright></copyright>

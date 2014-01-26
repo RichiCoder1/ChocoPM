@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
      xmlns:netfx="http://schemas.microsoft.com/wix/NetFxExtension">
-	<Product Id="*" Name="ChocoPM" Language="1033" Version="0.1.0.20140124" Manufacturer="Rash Apps" UpgradeCode="34f1c107-b1aa-447a-95bb-ebcffaa2e9c2">
-		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine" />
+	<Product Id="*" Name="ChocoPM" Language="1033" Version="0.1.1.20140126" Manufacturer="Rash Apps" UpgradeCode="34f1c107-b1aa-447a-95bb-ebcffaa2e9c2">
+		<Package InstallerVersion="200" Compressed="yes" InstallScope="perMachine"/>
     <Binary Id="ChocolateyAction" SourceFile="$(var.ChocolateyAction.TargetPath)"/>
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
     <Media Id="1" Cabinet="ChocoPM.cab" EmbedCab="yes" CompressionLevel="high"/>
