@@ -135,9 +135,7 @@
     <Compile Include="Commands\DataContextCommandBinding.cs" />
     <Compile Include="Commands\RoutedCommandBinding.cs" />
     <Compile Include="Commands\RoutedCommandMonitor.cs" />
-    <Compile Include="Controls\PowershellOutputBox.xaml.cs">
-      <DependentUpon>PowershellOutputBox.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Controls\FauxPowerShellConsole.cs" />
     <Compile Include="Controls\ObservableRingBuffer.cs" />
     <Compile Include="Converters\BooleanToVisibility.cs" />
     <Compile Include="Converters\LongSizeToFileSizeString.cs" />
@@ -176,10 +174,6 @@
     <Compile Include="Views\Home.xaml.cs">
       <DependentUpon>Home.xaml</DependentUpon>
     </Compile>
-    <Page Include="Controls\PowershellOutputBox.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -23,8 +23,8 @@
                             VerticalAlignment="Stretch"
                             Background="#FF252525"
                             Opacity=".7" />
-            <!--<controls:ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center" IsActive="{Binding IsProcessing}"></controls:ProgressRing>-->
-            <ctrls:PowershellOutputBox Buffer="{Binding OutputBuffer}" MinWidth="300" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20" AutomationProperties.Name="PowerShell Output"/>
+            <ctrls:FauxPowerShellConsole x:Name="PowerShellConsole" Buffer="{Binding OutputBuffer}" MinWidth="300" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="20" AutomationProperties.Name="PowerShell Output"
+                                         BorderBrush="#FFEBEBEB" BorderThickness="5" Background="#FF012456" Foreground="#FFEEEDF0" FontFamily="Lucida Console" FontSize="12" IsReadOnly="True"/>
         </Grid>
     </Grid>
 </controls:MetroWindow>
