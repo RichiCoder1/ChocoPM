@@ -5,6 +5,10 @@
 ### Note:
 This is a *Work In Progress*. This project will be evolving rapidly for as long as I (Richard Simpson) pay attention to it. You're free to modify and fork as you please and I welcome any and all pull requests!
 
+### Dependencies To Run
+1. .Net Framework 4.5
+2. Chocolatey v0.9.8.21+ 
+
 ### Dependencies To Build
 1. Visual Studio 2012 w/ NuGet
 2. .Net Framework 4.5
