@@ -36,9 +36,16 @@ $msiUpgradeCode = "{34f1c107-b1aa-447a-95bb-ebcffaa2e9c2}"
 $silentArgs = ''
 $validExitCodes = @(0) 
 $productCode = [ProductHelper]::GetProductCodeForUpgradeCodeAndVersionString($msiUpgradeCode, $packageVersionString)
-$msiArgs = "/x $productCode /qn /norestart"
+if($productCode -eq $null)
+{
+	Write-Host "$packageName ($packageVersionString) is not current installed"
+}
+else
+{
+	$msiArgs = "/x $productCode /qn /norestart"
 
-$uninstallMessage = "Uninstalling $packageName..."
-write-host $uninstallMessage
+	$uninstallMessage = "Uninstalling $packageName..."
+	write-host $uninstallMessage
 
-Start-ChocolateyProcessAsAdmin "$msiArgs" 'msiexec' -validExitCodes $validExitCodes
+	Start-ChocolateyProcessAsAdmin "$msiArgs" 'msiexec' -validExitCodes $validExitCodes
+}
