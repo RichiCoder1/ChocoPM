@@ -204,4 +204,7 @@
   <data name="HomeView_AvailablePackages_PrereleaseCheckBox" xml:space="preserve">
     <value>Include Prerelease</value>
   </data>
+  <data name="HomeView_PackagesGrid_VersionDownloadsColumnHeader" xml:space="preserve">
+    <value>Downloads</value>
+  </data>
 </root>

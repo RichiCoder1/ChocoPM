@@ -160,6 +160,15 @@ namespace ChocoPM.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Downloads.
+        /// </summary>
+        public static string HomeView_PackagesGrid_VersionDownloadsColumnHeader {
+            get {
+                return ResourceManager.GetString("HomeView_PackagesGrid_VersionDownloadsColumnHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to By:.
         /// </summary>
         public static string HomeView_PackageView_ByLabel {

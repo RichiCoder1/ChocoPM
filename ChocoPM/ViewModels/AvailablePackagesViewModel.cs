@@ -172,7 +172,15 @@ namespace ChocoPM.ViewModels
                     PageCount = (int)(_totalCount / _pageSize);
 
                     if (!string.IsNullOrWhiteSpace(SortColumn))
+                    {
+                        if (_sortColumn == "DownloadCount" && AllVersions)
+                            _sortColumn = "VersionDownloadCount";
+
+                        if (_sortColumn == "VersionDownloadCount" && !AllVersions)
+                            _sortColumn = "DownloadCount";
+
                         query = !SortDescending ? query.OrderBy(this._sortColumn) : query.OrderByDescending(this._sortColumn);
+                    }
 
                     query = query.Skip(CurrentPage * PageSize).Take(PageSize);
 

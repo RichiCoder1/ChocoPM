@@ -20,6 +20,11 @@
         <cvrts:LongSizeToFileSizeString x:Key="LongSizeToFileSizeString"/>
         <cvrts:PackageDependenciesToString x:Key="PackageDependenciesToString"/>
         <mrkd:TextToFlowDocumentConverter x:Key="TextToFlowDocumentConverter" Markdown="{StaticResource Markdown}"/>
+        
+        <DataGridTextColumn x:Key="TitleColumn" Header="{x:Static res:Strings.HomeView_PackagesGrid_TitleColumnHeader}" Binding="{Binding Title}" Width="2*"/>
+        <DataGridTextColumn x:Key="VersionColumn" Header="{x:Static res:Strings.HomeView_PackagesGrid_VersionColumnHeader}" Binding="{Binding Version}" Width="1*"/>
+        <DataGridTextColumn x:Key="TotalDownloadsColumn" Header="{x:Static res:Strings.HomeView_PackagesGrid_TotalDownloadsColumnHeader}" Binding="{Binding DownloadCount}" Width="1*" Visibility="{Binding DataContext.AllVersions, Source={x:Reference AvailablePackagesList}, Converter={StaticResource BooleanToVisibility}, ConverterParameter=True}"/>
+        <DataGridTextColumn x:Key="VersionDownloadsColumn" Header="{x:Static res:Strings.HomeView_PackagesGrid_VersionDownloadsColumnHeader}" Binding="{Binding VersionDownloadCount}" Width="1*" Visibility="{Binding DataContext.AllVersions, Source={x:Reference AvailablePackagesList}, Converter={StaticResource BooleanToVisibility}, ConverterParameter=False}"/>
     </Page.Resources>
     <Grid x:Name="PackagesGrid">
         <TabControl x:Name="PackagesTab" AutomationProperties.Name="Package Tabs">
@@ -55,9 +60,10 @@
                               AutoGenerateColumns="False" IsReadOnly="True"
                               Sorting="AvailablePackagesList_Sorting">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="{x:Static res:Strings.HomeView_PackagesGrid_TitleColumnHeader}" Binding="{Binding Title}" Width="2*"/>
-                            <DataGridTextColumn Header="{x:Static res:Strings.HomeView_PackagesGrid_VersionColumnHeader}" Binding="{Binding Version}" Width="1*"/>
-                            <DataGridTextColumn Header="{x:Static res:Strings.HomeView_PackagesGrid_TotalDownloadsColumnHeader}" Binding="{Binding DownloadCount}" Width="1*"/>
+                            <StaticResource ResourceKey="TitleColumn"></StaticResource>
+                            <StaticResource ResourceKey="VersionColumn"></StaticResource>
+                            <StaticResource ResourceKey="TotalDownloadsColumn"></StaticResource>
+                            <StaticResource ResourceKey="VersionDownloadsColumn"></StaticResource>
                         </DataGrid.Columns>
                     </DataGrid>
                     
