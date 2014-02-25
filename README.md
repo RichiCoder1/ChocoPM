@@ -1,20 +1,5 @@
 ## Choco Package Manager ##
 
-**ChocoPM** is a GUI for the Chocolatey package system.
+Howdy all! Thanks for your interested in this project. If you're still looking for a fast and furious Chocolatey GUI, I've moved all my attention to (giving the official ChocolateyGUI application a facelift)[https://github.com/chocolatey/ChocolateyGUI/tree/wpf_refresh] after the awesome guys there invited me over. Thanks for giving my app a glance!
 
-### Note:
-This is a *Work In Progress*. This project will be evolving rapidly for as long as I (Richard Simpson) pay attention to it. You're free to modify and fork as you please and I welcome any and all pull requests!
-
-### Dependencies To Run
-1. .Net Framework 4.5
-2. Chocolatey v0.9.8.21+ 
-
-### Dependencies To Build
-1. Visual Studio 2012 w/ NuGet
-2. .Net Framework 4.5
-3. Wix Toolset 3.8.X (Required for installer)
-4. Chocolatey v0.9.8.21+
-
-Simply open ChocoPM.sln, and hit build.
-
-Want to get a hold of me? Hit me up at @RichardSimp.
+- RichiCoder
